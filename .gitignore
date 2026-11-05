@@ -1,0 +1,5 @@
+dbsnap/
+media/
+*.xlsx
+.DS_Store
+__pycache__/

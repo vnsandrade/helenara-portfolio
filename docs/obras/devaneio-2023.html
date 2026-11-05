@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Devaneio · Helenara Andrade</title>
+<meta name="description" content="Devaneio, 2023. 49 x 52 cm. Obra de Helenara Andrade.">
+<meta property="og:title" content="Devaneio · Helenara Andrade">
+<meta property="og:description" content="Devaneio, 2023. 49 x 52 cm. Obra de Helenara Andrade.">
+<meta property="og:image" content="../img/f10.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="../estilo.css">
+</head><body><div class="wrap"><header class="top"><a class="brand" href="../index.html">Helenara Andrade</a><nav class="menu" aria-label="Menu"><a href="../obras.html" aria-current="page">Obras</a><a href="../sobre.html">Sobre</a><a href="../#contato">Contato</a></nav></header></div><main class="wrap"><article class="obra"><div><div class="view"><img src="../img/f10.jpg" data-zoom="../img/f10.jpg" alt="Devaneio"></div><div class="thumbs"></div><p class="cap">Toque na imagem para ampliar.</p></div><div class="info"><a class="cap" href="../obras.html" style="margin:0;text-decoration:none">← Obras</a><h1>Devaneio, <span class=yr>2023</span></h1><dl class="ficha"><dt>Ano</dt><dd>2023</dd><dt>Dimensões</dt><dd>49 x 52 cm</dd></dl><div class="cta"><span class="cap" style="margin:0">Valor sob consulta.</span><a class="btn solid" href="https://wa.me/5541991652920?text=Ol%C3%A1%2C%20Helenara%21%20Tenho%20interesse%20na%20obra%20%22Devaneio%22%20%282023%29." target="_blank" rel="noopener">Consultar pelo WhatsApp</a><a class="btn" href="mailto:helenara3@gmail.com?subject=Obra%3A%20Devaneio&body=Ol%C3%A1%2C%20Helenara%21%20Tenho%20interesse%20na%20obra%20%22Devaneio%22%20%282023%29.">Enviar e-mail</a></div><nav class="pn" aria-label="Outras obras"><a href="cidade-verde-2023.html">← Cidade Verde</a><a href="recortes-2023.html">Recortes →</a></nav></div></article></main><div class="wrap"><footer class="foot" id="contato"><div class="big">Contato</div><div><div class="eyebrow">WhatsApp</div><a href="https://wa.me/5541991652920" target="_blank" rel="noopener">+55 41 99165 2920</a></div><div><div class="eyebrow">E-mail</div><a href="mailto:helenara3@gmail.com">helenara3@gmail.com</a></div><div><div class="eyebrow">Instagram</div><a href="https://instagram.com/helenarandrade" target="_blank" rel="noopener">@helenarandrade</a></div><div><div class="eyebrow">Ateliê</div>Curitiba, Brasil</div></footer></div><div id="lb" role="dialog" aria-label="Foto ampliada"><img alt=""><button aria-label="Fechar">×</button></div><script>
+(()=>{const lb=document.getElementById('lb');if(!lb)return;const im=lb.querySelector('img');let s=1,x=0,y=0,d=null,m=false;
+const ap=()=>{im.style.transform=`translate(${x}px,${y}px) scale(${s})`;lb.classList.toggle('z',s>1)};
+const open=src=>{im.src=src;s=1;x=y=0;ap();lb.classList.add('on');document.body.style.overflow='hidden'};
+const close=()=>{lb.classList.remove('on');document.body.style.overflow=''};
+document.querySelectorAll('[data-zoom]').forEach(el=>el.addEventListener('click',()=>open(el.dataset.zoom||el.src)));
+lb.querySelector('button').onclick=close;addEventListener('keydown',e=>{if(e.key==='Escape')close()});
+im.addEventListener('pointerdown',e=>{d=[e.clientX,e.clientY];m=false;im.setPointerCapture(e.pointerId)});
+im.addEventListener('pointermove',e=>{if(!d||s===1)return;const dx=e.clientX-d[0],dy=e.clientY-d[1];if(Math.abs(dx)+Math.abs(dy)>3)m=true;x+=dx;y+=dy;d=[e.clientX,e.clientY];ap()});
+im.addEventListener('pointerup',e=>{d=null;if(m)return;if(s>1){s=1;x=y=0}else{const r=im.getBoundingClientRect();s=2.6;x=(r.left+r.width/2-e.clientX)*(s-1);y=(r.top+r.height/2-e.clientY)*(s-1)}ap()});
+lb.addEventListener('click',e=>{if(e.target===lb)close()});
+lb.addEventListener('wheel',e=>{e.preventDefault();s=Math.min(5,Math.max(1,s*Math.exp(-e.deltaY*.002)));if(s===1){x=y=0}ap()},{passive:false});
+document.querySelectorAll('.thumbs button').forEach(b=>b.onclick=()=>{const v=document.querySelector('.view img');v.src=b.dataset.src;v.dataset.zoom=b.dataset.full;
+ document.querySelectorAll('.thumbs button').forEach(o=>o.setAttribute('aria-current',o===b))});
+})();
+
+(()=>{const bs=[...document.querySelectorAll('.filters button')];bs.forEach(b=>b.onclick=()=>{const v=b.dataset.s;
+bs.forEach(o=>o.setAttribute('aria-pressed',o===b));document.querySelectorAll('.grid .item').forEach(it=>{it.hidden=v!=='*'&&it.dataset.s!==v})});})();
+</script></body></html>
