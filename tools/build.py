@@ -266,6 +266,13 @@ def build(args):
     base = json.load(open(args.base, encoding="utf-8"))
     W = montar_obras(base, args.db)
     keys = ["inicio"] + [w["foto"] for w in W] + [k for w in W for k in w["detalhes"]]
+    if args.faltando:
+        # lista as fotos que ainda precisam ser baixadas para --media (uma por linha)
+        for k in dict.fromkeys(keys):
+            pronto = all(os.path.exists(os.path.join(args.out, "img", k + x)) for x in (".jpg", "-t.jpg"))
+            if not pronto and not any(os.path.exists(os.path.join(args.media, k + x)) for x in (".jpg", ".jpeg", ".png")):
+                print(k)
+        return
     tam = gerar_imagens(dict.fromkeys(keys), args.media, args.out)
     os.makedirs(os.path.join(args.out, "obras"), exist_ok=True)
     open(os.path.join(args.out, "estilo.css"), "w").write(CSS)
@@ -321,6 +328,11 @@ def build(args):
     for f in glob.glob(os.path.join(args.out, "obras", "*.html")):
         if os.path.basename(f) not in validas:
             os.remove(f)
+    # remove fotos de obras que saíram do site (para não ficarem públicas)
+    usadas = {k + x for k in keys for x in (".jpg", "-t.jpg")}
+    for f in glob.glob(os.path.join(args.out, "img", "*.jpg")):
+        if os.path.basename(f) not in usadas:
+            os.remove(f)
     json.dump({"obras": len(W), "fotos": len(dict.fromkeys(keys))}, open(os.path.join(args.out, "build.json"), "w"))
     print(f"Site gerado: {len(W)} obras, {len(dict.fromkeys(keys))} fotos → {args.out}")
 
@@ -332,4 +344,5 @@ if __name__ == "__main__":
     ap.add_argument("--media", required=True)
     ap.add_argument("--out", default="docs")
     ap.add_argument("--artifact", action="store_true")
+    ap.add_argument("--faltando", action="store_true", help="só lista as fotos que faltam em --media")
     build(ap.parse_args())
