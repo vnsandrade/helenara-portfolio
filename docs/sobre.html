@@ -23,6 +23,11 @@ document.querySelectorAll('.thumbs button').forEach(b=>b.onclick=()=>{const v=do
  document.querySelectorAll('.thumbs button').forEach(o=>o.setAttribute('aria-current',o===b))});
 })();
 
+(()=>{const bs=[...document.querySelectorAll('.modes button')];if(!bs.length)return;
+bs.forEach(b=>b.onclick=()=>{const p=b.dataset.m==='parede';bs.forEach(o=>o.setAttribute('aria-pressed',o===b));
+document.querySelector('.wall').hidden=!p;document.querySelector('.view').hidden=p;
+const t=document.querySelector('.thumbs');if(t)t.hidden=p;const c=document.querySelector('.zoomcap');if(c)c.hidden=p;})})();
+
 (()=>{const bs=[...document.querySelectorAll('.filters button')];bs.forEach(b=>b.onclick=()=>{const v=b.dataset.s;
 bs.forEach(o=>o.setAttribute('aria-pressed',o===b));document.querySelectorAll('.grid .item').forEach(it=>{it.hidden=v!=='*'&&it.dataset.s!==v})});})();
 </script></body></html>

@@ -85,6 +85,7 @@ def montar_obras(base, db):
             if ed.get(k) is not None:
                 w[k] = str(ed[k])
         if ed.get("alt") and ed.get("larg"):
+            w["alt"], w["larg"] = float(ed["alt"]), float(ed["larg"])
             w["dim"] = f'{fmt(ed["alt"])} x {fmt(ed["larg"])}' + (" (cada)" if w["q"] > 1 else "")
         if ed.get("foto"):
             w["foto"] = ed["foto"]
@@ -92,7 +93,7 @@ def montar_obras(base, db):
     for doc_id, n in sorted(novas.items(), key=lambda kv: str(kv[1].get("criado", ""))):
         W.append({"id": "n_" + doc_id, "ord": 1000, "t": n.get("t") or "Sem título", "a": str(n.get("a") or ""),
                   "s": n.get("s") or "", "tec": n.get("tec") or "", "mat": n.get("mat") or "",
-                  "dim": f'{fmt(n["alt"])} x {fmt(n["larg"])}', "q": 1, "foto": n["foto"], "detalhes": [],
+                  "dim": f'{fmt(n["alt"])} x {fmt(n["larg"])}', "q": 1, "foto": n["foto"], "detalhes": [], "alt": float(n["alt"]), "larg": float(n["larg"]),
                   "criado": n.get("criado", "")})
     out = []
     for w in W:
@@ -161,6 +162,7 @@ h1,h2,h3{font-weight:500;letter-spacing:-.025em;margin:0;text-wrap:balance}
 .sechead h2{font-size:clamp(28px,3.4vw,44px)}
 .more{font-size:15px}
 .grid{columns:3 320px;column-gap:clamp(20px,3vw,48px)}
+.item[hidden]{display:none}
 .item{break-inside:avoid;display:block;text-decoration:none;margin-bottom:clamp(36px,4vw,56px)}
 .item img{width:100%;height:auto;background:var(--line);transition:opacity .25s}
 .item:hover img{opacity:.88}
@@ -174,6 +176,11 @@ h1,h2,h3{font-weight:500;letter-spacing:-.025em;margin:0;text-wrap:balance}
 .filters button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .obra{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(280px,.7fr);gap:clamp(28px,5vw,80px);padding-block:clamp(16px,3vw,40px) clamp(48px,6vw,96px);align-items:start}
 .view img{width:100%;height:auto;max-height:84vh;object-fit:contain;object-position:left top;cursor:zoom-in}
+.modes{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:3px;margin-bottom:14px}
+.modes button{font:inherit;font-size:14px;border:0;background:transparent;border-radius:999px;padding:6px 16px;cursor:pointer;color:var(--muted)}
+.modes button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.wall[hidden],.view[hidden],.thumbs[hidden]{display:none}
+.wall svg{width:100%;height:auto;max-height:84vh;display:block}
 .thumbs{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
 .thumbs button{padding:0;border:2px solid transparent;background:none;cursor:pointer}
 .thumbs button[aria-current="true"]{border-color:var(--ink)}
@@ -226,6 +233,12 @@ document.querySelectorAll('.thumbs button').forEach(b=>b.onclick=()=>{const v=do
 })();
 """
 
+MODES_JS = """
+(()=>{const bs=[...document.querySelectorAll('.modes button')];if(!bs.length)return;
+bs.forEach(b=>b.onclick=()=>{const p=b.dataset.m==='parede';bs.forEach(o=>o.setAttribute('aria-pressed',o===b));
+document.querySelector('.wall').hidden=!p;document.querySelector('.view').hidden=p;
+const t=document.querySelector('.thumbs');if(t)t.hidden=p;const c=document.querySelector('.zoomcap');if(c)c.hidden=p;})})();
+"""
 FILTER_JS = """
 (()=>{const bs=[...document.querySelectorAll('.filters button')];bs.forEach(b=>b.onclick=()=>{const v=b.dataset.s;
 bs.forEach(o=>o.setAttribute('aria-pressed',o===b));document.querySelectorAll('.grid .item').forEach(it=>{it.hidden=v!=='*'&&it.dataset.s!==v})});})();
@@ -247,11 +260,41 @@ def pagina(titulo, desc, corpo, rel, atual, artifact_index=False, og=""):
               f'<div><div class="eyebrow">E-mail</div><a href="mailto:{e(ARTISTA["email"])}">{e(ARTISTA["email"])}</a></div>'
               f'<div><div class="eyebrow">Instagram</div><a href="https://instagram.com/{ARTISTA["insta"]}" target="_blank" rel="noopener">@{e(ARTISTA["insta"])}</a></div>'
               f'<div><div class="eyebrow">Ateliê</div>{e(ARTISTA["local"])}</div></footer></div>')
-    body = topo + corpo + rodape + f'<div id="lb" role="dialog" aria-label="Foto ampliada"><img alt=""><button aria-label="Fechar">×</button></div><script>{LB_JS}{FILTER_JS}</script>'
+    body = topo + corpo + rodape + f'<div id="lb" role="dialog" aria-label="Foto ampliada"><img alt=""><button aria-label="Fechar">×</button></div><script>{LB_JS}{MODES_JS}{FILTER_JS}</script>'
     if artifact_index:  # página principal da prévia no Claude: o host envolve com o esqueleto HTML
         return head + f'<style>{CSS}</style>\n' + body
     return ('<!doctype html>\n<html lang="pt-BR"><head><meta charset="utf-8">'
             '<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">\n' + head + '</head><body>' + body + '</body></html>')
+
+
+# obras do catálogo/fora em que a artista passa na frente do quadro (ajustado à mão no Acervo)
+PESSOA_FRENTE = {"o06", "o07", "o21", "o22", "o26", "o28", "o30", "o33", "x07", "x17", "x18", "x19"}
+
+
+def parede(w, tam):
+    """Simulação em escala na parede do ateliê (mesma régua do Acervo: 6,0935 px por cm)."""
+    nums = [float(x.replace(",", ".")) for x in re.findall(r"[\d,]+", w["dim"])][:2]
+    L, S = max(nums), min(nums)
+    tw, th = tam.get(w["foto"], (1, 1))
+    pw, ph = (L, S) if tw >= th else (S, L)
+    if w.get("alt") and w.get("larg"):
+        pw, ph = w["larg"], w["alt"]
+    paineis = [w["foto"]] + (w["detalhes"][:1] if w["q"] > 1 else [])
+    PX, CX, CY, gap = 6.0935, 574.5, 760.4, 8
+    w2, h2, g2 = pw * PX, ph * PX, gap * PX
+    tot = len(paineis) * w2 + (len(paineis) - 1) * g2
+    x0, y0 = CX - tot / 2, CY - h2 / 2
+    if w["id"].startswith("n_") or w.get("alt"):
+        pessoa = CX + pw * PX / 2 >= 860 and ph >= 60
+    else:
+        pessoa = w["id"] in PESSOA_FRENTE
+    imgs = "".join(f'<image href="../img/{k}.jpg" x="{x0 + i * (w2 + g2):.1f}" y="{y0:.1f}" width="{w2:.1f}" height="{h2:.1f}" preserveAspectRatio="none"/>'
+                   for i, k in enumerate(paineis))
+    return (f'<svg viewBox="0 150 1200 1600" preserveAspectRatio="xMidYMid meet" role="img" aria-label="{e(w["t"])} em escala na parede do ateliê">'
+            '<defs><filter id="sh" x="-10%" y="-10%" width="125%" height="125%"><feDropShadow dx="6" dy="9" stdDeviation="9" flood-color="#000" flood-opacity=".26"/></filter></defs>'
+            f'<image href="../img/{"parede.jpg" if pessoa else "parede-vazia.jpg"}" x="0" y="0" width="1200" height="1800"/>'
+            f'<g filter="url(#sh)">{imgs}</g>'
+            + ('<image href="../img/pessoa.png" x="629" y="545.1" width="461" height="1167"/>' if pessoa else "") + '</svg>')
 
 
 def card(w, rel, tam):
@@ -275,6 +318,9 @@ def build(args):
         return
     tam = gerar_imagens(dict.fromkeys(keys), args.media, args.out)
     os.makedirs(os.path.join(args.out, "obras"), exist_ok=True)
+    import shutil
+    for f in ("parede.jpg", "parede-vazia.jpg", "pessoa.png"):
+        shutil.copyfile(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data", "parede", f), os.path.join(args.out, "img", f))
     open(os.path.join(args.out, "estilo.css"), "w").write(CSS)
     nome = ARTISTA["nome"]
     recentes = [w for w in W if w["a"] and int(w["a"]) >= max(int(x["a"]) for x in W if x["a"].isdigit()) - 0][:9] or W[:9]
@@ -308,8 +354,11 @@ def build(args):
                f'<a class="btn solid" href="https://wa.me/{ARTISTA["whats"]}?text={quote(msg)}" target="_blank" rel="noopener">Consultar pelo WhatsApp</a>'
                f'<a class="btn" href="mailto:{ARTISTA["email"]}?subject={quote("Obra: " + w["t"])}&body={quote(msg)}">Enviar e-mail</a></div>')
         ant, prox = W[i - 1], W[(i + 1) % len(W)]
-        corpo = (f'<main class="wrap"><article class="obra"><div><div class="view"><img src="../img/{w["foto"]}.jpg" data-zoom="../img/{w["foto"]}.jpg" alt="{e(w["t"])}"></div>'
-                 f'<div class="thumbs">{thumbs}</div><p class="cap">Toque na imagem para ampliar.</p></div>'
+        corpo = (f'<main class="wrap"><article class="obra"><div><div class="modes" role="group" aria-label="Visualização">'
+                 f'<button type="button" data-m="obra" aria-pressed="true">Obra</button><button type="button" data-m="parede" aria-pressed="false">Na parede</button></div>'
+                 f'<div class="wall" hidden>{parede(w, tam)}<p class="cap">Simulação em escala aproximada na parede do ateliê. A artista tem 1,60 m.</p></div>'
+                 f'<div class="view"><img src="../img/{w["foto"]}.jpg" data-zoom="../img/{w["foto"]}.jpg" alt="{e(w["t"])}"></div>'
+                 f'<div class="thumbs">{thumbs}</div><p class="cap zoomcap">Toque na imagem para ampliar.</p></div>'
                  f'<div class="info"><a class="cap" href="../obras.html" style="margin:0;text-decoration:none">← Obras</a>'
                  f'<h1>{e(w["t"])}{", <span class=yr>" + e(w["a"]) + "</span>" if w["a"] else ""}</h1>'
                  f'<dl class="ficha">{"".join(f"<dt>{k}</dt><dd>{e(v)}</dd>" for k, v in ficha if v)}</dl>{cta}'
@@ -329,7 +378,7 @@ def build(args):
         if os.path.basename(f) not in validas:
             os.remove(f)
     # remove fotos de obras que saíram do site (para não ficarem públicas)
-    usadas = {k + x for k in keys for x in (".jpg", "-t.jpg")}
+    usadas = {k + x for k in keys for x in (".jpg", "-t.jpg")} | {"parede.jpg", "parede-vazia.jpg"}
     for f in glob.glob(os.path.join(args.out, "img", "*.jpg")):
         if os.path.basename(f) not in usadas:
             os.remove(f)

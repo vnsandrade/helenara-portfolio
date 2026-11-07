@@ -25,6 +25,7 @@ h1,h2,h3{font-weight:500;letter-spacing:-.025em;margin:0;text-wrap:balance}
 .sechead h2{font-size:clamp(28px,3.4vw,44px)}
 .more{font-size:15px}
 .grid{columns:3 320px;column-gap:clamp(20px,3vw,48px)}
+.item[hidden]{display:none}
 .item{break-inside:avoid;display:block;text-decoration:none;margin-bottom:clamp(36px,4vw,56px)}
 .item img{width:100%;height:auto;background:var(--line);transition:opacity .25s}
 .item:hover img{opacity:.88}
@@ -38,6 +39,11 @@ h1,h2,h3{font-weight:500;letter-spacing:-.025em;margin:0;text-wrap:balance}
 .filters button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
 .obra{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(280px,.7fr);gap:clamp(28px,5vw,80px);padding-block:clamp(16px,3vw,40px) clamp(48px,6vw,96px);align-items:start}
 .view img{width:100%;height:auto;max-height:84vh;object-fit:contain;object-position:left top;cursor:zoom-in}
+.modes{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:3px;margin-bottom:14px}
+.modes button{font:inherit;font-size:14px;border:0;background:transparent;border-radius:999px;padding:6px 16px;cursor:pointer;color:var(--muted)}
+.modes button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.wall[hidden],.view[hidden],.thumbs[hidden]{display:none}
+.wall svg{width:100%;height:auto;max-height:84vh;display:block}
 .thumbs{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
 .thumbs button{padding:0;border:2px solid transparent;background:none;cursor:pointer}
 .thumbs button[aria-current="true"]{border-color:var(--ink)}
