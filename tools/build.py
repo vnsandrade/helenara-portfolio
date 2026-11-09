@@ -387,7 +387,7 @@ def pagina(titulo, desc, corpo, rel, atual, artifact_index=False, og="", classe=
     cur = lambda k: ' aria-current="page"' if atual == k else ""
     sub = "".join(f'<a href="{rel}series/{sl}.html"{cur("s:" + sl)}><span>{e(n)}</span><small>{c}</small></a>' for n, sl, c in SERIES_NAV)
     aberto = " open" if atual.startswith("s:") else ""
-    menu = (f'<a class="pill" href="{rel}index.html"{cur("obras")}>Obras</a>'
+    menu = (f'<a class="pill" href="{rel}obras.html"{cur("obras")}>Obras</a>'
             f'<details class="dd"{aberto}><summary class="pill{" on" if aberto else ""}">Séries'
             '<svg class="chev" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5 6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.4"/></svg></summary>'
             f'<div class="ddp">{sub}</div></details>'
@@ -469,8 +469,7 @@ def build(args):
     SERIES_NAV = [(n, slug(n), sum(1 for w in W if w["s"] == n)) for n in sorted({w["s"] for w in W if w["s"]})] + [("Sem série", "sem-serie", sum(1 for w in W if not w["s"]))]
     corpo = (f'<h1 class="sr">Obras de {e(nome)}</h1>'
              f'<div class="grid">{"".join(card(w, "", tam, i) for i, w in enumerate(W))}</div>')
-    for arq in ("index.html", "obras.html"):
-        open(os.path.join(args.out, arq), "w").write(pagina(f"{nome} · Pintura", f"Portfólio da artista visual {nome}: {len(W)} pinturas, séries e exposições.", corpo, "", "obras", args.artifact and arq == "index.html", "img/inicio.jpg"))
+    open(os.path.join(args.out, "obras.html"), "w").write(pagina(f"Obras · {nome}", f"Todas as {len(W)} pinturas da artista visual {nome}.", corpo, "", "obras", og="img/inicio.jpg"))
     # páginas das séries
     os.makedirs(os.path.join(args.out, "series"), exist_ok=True)
     for f in glob.glob(os.path.join(args.out, "series", "*.html")):
@@ -549,7 +548,10 @@ def build(args):
                   f'<a class="pill" href="obras.html">Todas as obras →</a></div><div class="sgrid">{scards}</div></section>')
     teaser = (f'<section class="sec"><div class="teaser"><img src="img/inicio.jpg" alt="{e(nome)} no ateliê" loading="lazy">'
               f'<div><p class="eyebrow">Sobre</p><h2>{e(nome)}</h2><p>{e(STATEMENT[0])}</p><a class="pill" href="sobre.html">Conheça a artista</a></div></div></section>')
-    open(os.path.join(args.out, "previa.html"), "w").write(
+    prev = os.path.join(args.out, "previa.html")
+    if os.path.exists(prev):
+        os.remove(prev)
+    open(os.path.join(args.out, "index.html"), "w").write(
         pagina(f"{nome} · Pintura", f"Portfólio da artista visual {nome}.", hero + feat + series_sec + teaser, "", "inicio", og="img/inicio.jpg", classe="home"))
     open(os.path.join(args.out, "sobre.html"), "w").write(pagina(f"Sobre · {nome}", STATEMENT[0][:150], corpo, "", "sobre"))
     # limpa páginas de obras que saíram do site
