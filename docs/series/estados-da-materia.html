@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Série Estados da Matéria · Helenara Andrade</title>
+<meta name="description" content="Investigo o comportamento da tinta em contato com minerais e resina acrílica, explorando deslocamentos, acúmulos e transformações da superfície pictórica.">
+<meta property="og:title" content="Série Estados da Matéria · Helenara Andrade">
+<meta property="og:description" content="Investigo o comportamento da tinta em contato com minerais e resina acrílica, explorando deslocamentos, acúmulos e transformações da superfície pictórica.">
+<meta name="theme-color" content="#FFFFFF">
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-grotesk@500,600&f[]=satoshi@400,500&display=swap">
+<link rel="stylesheet" href="../estilo.css">
+</head><body><div class="mtop"><a href="../index.html">Helenara Andrade</a><button class="pill mbtn" aria-controls="menu" aria-expanded="false">Menu</button></div><aside class="side" id="menu"><a class="brand" href="../index.html"><b>Helenara<br>Andrade</b><span>Artista visual · Curitiba, Brasil</span></a><nav aria-label="Menu"><a class="pill" href="../index.html">Obras</a><div class="sub"><span>Séries</span><a href="../series/campos-de-cor.html">Campos de Cor</a><a href="../series/estados-da-materia.html" aria-current="page">Estados da Matéria</a><a href="../series/estratos.html">Estratos</a><a href="../series/fluxo.html">Fluxo</a><a href="../series/forcas-da-materia.html">Forças da Matéria</a><a href="../series/interferencias.html">Interferências</a><a href="../series/strata.html">Strata</a><a href="../series/temporalidades.html">Temporalidades</a><a href="../series/vestigios.html">Vestígios</a><a href="../series/sem-serie.html">Sem série</a></div><a class="pill" href="../sobre.html">Sobre</a></nav><div class="bottom"><div class="row"><a class="pill" href="https://wa.me/5541991652920" target="_blank" rel="noopener">Fale comigo</a><a class="pill ico" href="https://instagram.com/helenarandrade" target="_blank" rel="noopener" aria-label="Instagram @helenarandrade"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.3" cy="6.7" r="1" fill="currentColor" stroke="none"/></svg></a><a class="pill ico" href="mailto:helenara3@gmail.com" aria-label="E-mail helenara3@gmail.com"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6"/></svg></a></div><div class="copy">© 2026 Helenara Andrade</div></div></aside><main class="main"><header class="shead"><div><h1>Estados da Matéria</h1><p class="n">3 obras</p></div><p class="txt">Investigo o comportamento da tinta em contato com minerais e resina acrílica, explorando deslocamentos, acúmulos e transformações da superfície pictórica.</p></header><div class="grid"><a class="item" href="../obras/materia-em-emersao-2026.html" data-s="Estados da Matéria" style="animation-delay:0ms"><div class="frame"><img class="rv" src="../img/01-t.jpg" width="720" height="642" alt="Matéria em Emersão" loading="lazy"></div><div class="meta"><span><span class="t">Matéria em Emersão</span>, 2026</span><span class="d">85 x 74 cm</span></div></a><a class="item" href="../obras/materia-em-expansao-2026.html" data-s="Estados da Matéria" style="animation-delay:60ms"><div class="frame"><img class="rv" src="../img/02-t.jpg" width="720" height="956" alt="Matéria em Expansão" loading="lazy"></div><div class="meta"><span><span class="t">Matéria em Expansão</span>, 2026</span><span class="d">78 x 60 cm</span></div></a><a class="item" href="../obras/materia-em-deposicao-2026.html" data-s="Estados da Matéria" style="animation-delay:120ms"><div class="frame"><img class="rv" src="../img/03-t.jpg" width="720" height="1012" alt="Matéria em Deposição" loading="lazy"></div><div class="meta"><span><span class="t">Matéria em Deposição</span>, 2026</span><span class="d">86 x 63 cm</span></div></a></div></main><div id="lb" role="dialog" aria-label="Foto ampliada"><img alt=""><button aria-label="Fechar">×</button></div><script>
+(()=>{const lb=document.getElementById('lb');if(!lb)return;const im=lb.querySelector('img');let s=1,x=0,y=0,d=null,m=false;
+const ap=()=>{im.style.transform=`translate(${x}px,${y}px) scale(${s})`;lb.classList.toggle('z',s>1)};
+const open=src=>{im.src=src;s=1;x=y=0;ap();lb.classList.add('on');document.body.style.overflow='hidden'};
+const close=()=>{lb.classList.remove('on');document.body.style.overflow=''};
+document.querySelectorAll('[data-zoom]').forEach(el=>el.addEventListener('click',()=>open(el.dataset.zoom||el.src)));
+lb.querySelector('button').onclick=close;addEventListener('keydown',e=>{if(e.key==='Escape')close()});
+im.addEventListener('pointerdown',e=>{d=[e.clientX,e.clientY];m=false;im.setPointerCapture(e.pointerId)});
+im.addEventListener('pointermove',e=>{if(!d||s===1)return;const dx=e.clientX-d[0],dy=e.clientY-d[1];if(Math.abs(dx)+Math.abs(dy)>3)m=true;x+=dx;y+=dy;d=[e.clientX,e.clientY];ap()});
+im.addEventListener('pointerup',e=>{d=null;if(m)return;if(s>1){s=1;x=y=0}else{const r=im.getBoundingClientRect();s=2.6;x=(r.left+r.width/2-e.clientX)*(s-1);y=(r.top+r.height/2-e.clientY)*(s-1)}ap()});
+lb.addEventListener('click',e=>{if(e.target===lb)close()});
+lb.addEventListener('wheel',e=>{e.preventDefault();s=Math.min(5,Math.max(1,s*Math.exp(-e.deltaY*.002)));if(s===1){x=y=0}ap()},{passive:false});
+document.querySelectorAll('.thumbs button').forEach(b=>b.onclick=()=>{const v=document.querySelector('.view img');v.src=b.dataset.src;v.dataset.zoom=b.dataset.full;
+ document.querySelectorAll('.thumbs button').forEach(o=>o.setAttribute('aria-current',o===b))});
+})();
+
+(()=>{const bs=[...document.querySelectorAll('.modes button')];if(!bs.length)return;
+bs.forEach(b=>b.onclick=()=>{const p=b.dataset.m==='parede';bs.forEach(o=>o.setAttribute('aria-pressed',o===b));
+document.querySelector('.wall').hidden=!p;document.querySelector('.view').hidden=p;
+const t=document.querySelector('.thumbs');if(t)t.hidden=p;const c=document.querySelector('.zoomcap');if(c)c.hidden=p;const wc=document.querySelector('.wallcap');if(wc)wc.hidden=!p;})})();
+
+(()=>{document.querySelectorAll('img.rv').forEach(i=>{const f=()=>i.classList.add('ok');i.complete&&i.naturalWidth?f():i.addEventListener('load',f)});
+const b=document.querySelector('.mbtn');if(b)b.onclick=()=>{const on=document.body.classList.toggle('menu-on');b.textContent=on?'Fechar':'Menu';b.setAttribute('aria-expanded',on)};})();
+
+(()=>{const bs=[...document.querySelectorAll('.filters button')];bs.forEach(b=>b.onclick=()=>{const v=b.dataset.s;
+bs.forEach(o=>o.setAttribute('aria-pressed',o===b));document.querySelectorAll('.grid .item').forEach(it=>{it.hidden=v!=='*'&&it.dataset.s!==v})});})();
+</script></body></html>

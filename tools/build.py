@@ -157,7 +157,16 @@ h1,h2,h3{font-family:var(--fd);font-weight:500;letter-spacing:-.025em;line-heigh
 .brand{text-decoration:none;display:block}
 .brand b{display:block;font-family:var(--fd);font-weight:500;font-size:46px;line-height:.98;letter-spacing:-.035em}
 .brand span{display:block;margin-top:10px;font-size:14px;color:var(--muted)}
-.side nav{display:flex;flex-direction:column;align-items:flex-start;gap:10px;margin-top:56px}
+.side nav{display:flex;flex-direction:column;align-items:flex-start;gap:10px;margin-top:48px}
+.sub{display:flex;flex-direction:column;gap:3px;padding:4px 0 10px 14px;border-left:1px solid var(--line);margin-left:2px}
+.sub span{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.sub a{font-size:14px;text-decoration:none;color:var(--muted);padding:1px 0}
+.sub a:hover,.sub a[aria-current="page"]{color:var(--ink)}
+.sub a[aria-current="page"]{text-decoration:underline;text-underline-offset:4px}
+.shead{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:24px 48px;align-items:end;padding-bottom:28px;margin-bottom:32px;border-bottom:1px solid var(--line)}
+.shead h1{font-size:clamp(34px,4vw,56px)}
+.shead .n{font-size:14px;color:var(--muted);margin-top:10px}
+.shead p.txt{margin:0;font-size:16.5px;line-height:1.65;color:#46423e;max-width:60ch}
 .side .bottom{margin-top:auto;display:flex;flex-direction:column;gap:22px}
 .side .row{display:flex;gap:10px;align-items:center}
 .copy{font-size:12px;color:var(--muted)}
@@ -197,6 +206,7 @@ h1,h2,h3{font-family:var(--fd);font-weight:500;letter-spacing:-.025em;line-heigh
 .obra{display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,320px);gap:clamp(28px,3.5vw,56px);align-items:start}
 .obra-txt{position:sticky;top:40px;display:flex;flex-direction:column;gap:22px;padding-top:56px}
 .obra-txt .serie{margin-top:10px}
+.obra-txt .serie a{text-decoration:none;border-bottom:1px solid var(--line)}
 .ficha{border-top:1px solid var(--line);padding-top:18px}
 .obra-txt h1{font-size:clamp(30px,2.8vw,42px)}
 .obra-txt .serie{margin-top:14px;color:var(--muted)}
@@ -229,6 +239,8 @@ h1,h2,h3{font-family:var(--fd);font-weight:500;letter-spacing:-.025em;line-heigh
  body.menu-on .side{opacity:1;visibility:visible}
  .side .brand{display:none}
  .side nav{margin-top:12px}
+ .sub a{font-size:16px}
+ .shead{grid-template-columns:1fr}
  .filters{flex-wrap:nowrap;overflow-x:auto;margin-inline:-20px;padding-inline:20px;scrollbar-width:none}.filters::-webkit-scrollbar{display:none}.filters .pill{flex:none}.side nav .pill{font-size:18px;padding:12px 24px}
  .mtop{display:flex;position:sticky;top:0;z-index:30;justify-content:space-between;align-items:center;padding:16px 20px;background:var(--bg)}
  .mtop a{font-family:var(--fd);font-weight:500;font-size:22px;letter-spacing:-.02em;text-decoration:none}
@@ -281,6 +293,9 @@ IC_IG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width
 IC_EM = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6"/></svg>'
 
 
+SERIES_NAV, SERIES_TXT = [], {}
+
+
 def pagina(titulo, desc, corpo, rel, atual, artifact_index=False, og=""):
     head = (f'<title>{e(titulo)}</title>\n<meta name="description" content="{e(desc)}">\n'
             f'<meta property="og:title" content="{e(titulo)}">\n<meta property="og:description" content="{e(desc)}">\n'
@@ -289,8 +304,11 @@ def pagina(titulo, desc, corpo, rel, atual, artifact_index=False, og=""):
               '<link rel="preconnect" href="https://api.fontshare.com" crossorigin>\n'
               '<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-grotesk@500,600&f[]=satoshi@400,500&display=swap">\n'
             + f'<link rel="stylesheet" href="{rel}estilo.css">\n')
-    menu = "".join(f'<a class="pill" href="{rel}{h}"{" aria-current=\"page\"" if atual == k else ""}>{n}</a>'
-                   for k, h, n in (("obras", "index.html", "Obras"), ("sobre", "sobre.html", "Sobre")))
+    cur = lambda k: ' aria-current="page"' if atual == k else ""
+    sub = "".join(f'<a href="{rel}series/{sl}.html"{cur("s:" + sl)}>{e(n)}</a>' for n, sl in SERIES_NAV)
+    menu = (f'<a class="pill" href="{rel}index.html"{cur("obras")}>Obras</a>'
+            f'<div class="sub"><span>Séries</span>{sub}</div>'
+            f'<a class="pill" href="{rel}sobre.html"{cur("sobre")}>Sobre</a>')
     wa = f'https://wa.me/{ARTISTA["whats"]}'
     side = (f'<aside class="side" id="menu"><a class="brand" href="{rel}index.html"><b>Helenara<br>Andrade</b><span>Artista visual · {e(ARTISTA["local"])}</span></a>'
             f'<nav aria-label="Menu">{menu}</nav>'
@@ -363,12 +381,25 @@ def build(args):
         shutil.copyfile(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data", "parede", f), os.path.join(args.out, "img", f))
     open(os.path.join(args.out, "estilo.css"), "w").write(CSS)
     nome = ARTISTA["nome"]
-    series = sorted({w["s"] for w in W if w["s"]})
-    filtros = '<button class="pill" data-s="*" aria-pressed="true">Todas</button>' + "".join(f'<button class="pill" data-s="{e(s)}" aria-pressed="false">{e(s)}</button>' for s in series)
-    corpo = (f'<h1 class="sr">Obras de {e(nome)}</h1><div class="filters" role="group" aria-label="Filtrar por série">{filtros}</div>'
+    global SERIES_NAV, SERIES_TXT
+    SERIES_TXT = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data", "series.json")))
+    SERIES_NAV = [(n, slug(n)) for n in sorted({w["s"] for w in W if w["s"]})] + [("Sem série", "sem-serie")]
+    corpo = (f'<h1 class="sr">Obras de {e(nome)}</h1>'
              f'<div class="grid">{"".join(card(w, "", tam, i) for i, w in enumerate(W))}</div>')
     for arq in ("index.html", "obras.html"):
         open(os.path.join(args.out, arq), "w").write(pagina(f"{nome} · Pintura", f"Portfólio da artista visual {nome}: {len(W)} pinturas, séries e exposições.", corpo, "", "obras", args.artifact and arq == "index.html", "img/inicio.jpg"))
+    # páginas das séries
+    os.makedirs(os.path.join(args.out, "series"), exist_ok=True)
+    for f in glob.glob(os.path.join(args.out, "series", "*.html")):
+        os.remove(f)
+    for n, sl in SERIES_NAV:
+        ws = [w for w in W if (w["s"] or "") == ("" if sl == "sem-serie" else n)]
+        txt = SERIES_TXT.get(n, "")
+        corpo = (f'<header class="shead"><div><h1>{e(n)}</h1><p class="n">{len(ws)} obra{"s" if len(ws) != 1 else ""}</p></div>'
+                 + (f'<p class="txt">{e(txt)}</p>' if txt else "<span></span>") + '</header>'
+                 f'<div class="grid">{"".join(card(w, "../", tam, i) for i, w in enumerate(ws))}</div>')
+        titulo = (f"Série {n}" if sl != "sem-serie" else "Obras sem série") + f" · {nome}"
+        open(os.path.join(args.out, "series", sl + ".html"), "w").write(pagina(titulo, txt or titulo, corpo, "../", "s:" + sl))
     # cada obra
     for i, w in enumerate(W):
         fotos = [w["foto"]] + w["detalhes"]
@@ -390,7 +421,7 @@ def build(args):
                  f'<p class="cap wallcap" hidden>Simulação em escala aproximada na parede do ateliê. A artista tem 1,60 m.</p>'
                  f'<div class="thumbs">{thumbs}</div><p class="cap zoomcap">Toque na imagem para ampliar.</p></div>'
                  f'<aside class="obra-txt"><div><h1>{e(w["t"])}</h1>'
-                 + (f'<p class="serie">Série {e(w["s"])}</p>' if w["s"] else "") + '</div>'
+                 + (f'<p class="serie"><a href="../series/{slug(w["s"])}.html">Série {e(w["s"])}</a></p>' if w["s"] else "") + '</div>'
                  f'<dl class="ficha">{"".join(f"<dt class=k>{k}</dt><dd>{e(v)}</dd>" for k, v in ficha if v)}</dl>{cta}</aside></div>'
                  f'<nav class="pn" aria-label="Outras obras"><a class="pill" href="{ant["slug"]}.html">← {e(ant["t"])}</a><a class="pill" href="{prox["slug"]}.html">{e(prox["t"])} →</a></nav></article>')
         desc = f'{w["t"]}' + (f', {w["a"]}' if w["a"] else "") + f'. {w["tec"] + ", " if w["tec"] else ""}{w["dim"]} cm. Obra de {nome}.'
