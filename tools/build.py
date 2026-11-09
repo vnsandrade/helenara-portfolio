@@ -145,7 +145,7 @@ body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--fb);font-s
 a{color:inherit}
 img{max-width:100%;display:block}
 h1,h2,h3{font-family:var(--fd);font-weight:500;letter-spacing:-.025em;line-height:1.05;margin:0;text-wrap:balance}
-.pill{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:999px;padding:10px 20px;font:500 14px/1.25 var(--fb);
+.pill{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:0;padding:10px 20px;font:500 14px/1.25 var(--fb);
  text-decoration:none;border:1px solid rgba(41,38,35,.2);background:rgba(234,226,215,.5);color:var(--ink);cursor:pointer;transition:background-color .2s,opacity .2s}
 .pill:hover,.pill[aria-current="page"],.pill[aria-pressed="true"]{background:var(--pill)}
 .pill.dark{background:var(--ink);color:var(--bg);border-color:var(--ink)}
@@ -168,44 +168,47 @@ h1,h2,h3{font-family:var(--fd);font-weight:500;letter-spacing:-.025em;line-heigh
 /* grade de obras */
 .filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px}
 .filters .pill{padding:8px 16px;font-size:13px}
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:40px 24px}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:36px 24px}
 .item[hidden]{display:none}
 .item{display:block;text-decoration:none;opacity:0;animation:up .7s var(--ease) forwards}
-.frame{position:relative;overflow:hidden;border-radius:24px;background:var(--card);aspect-ratio:4/5;transition:transform .6s var(--ease),box-shadow .6s var(--ease)}
+.frame{position:relative;overflow:hidden;border-radius:0;background:var(--card);aspect-ratio:4/5;transition:transform .6s var(--ease),box-shadow .6s var(--ease)}
 .frame img{width:100%;height:100%;object-fit:cover;transition:transform .8s var(--ease),filter .8s var(--ease),opacity .6s var(--ease)}
-.item:hover .frame{transform:translateY(-8px);box-shadow:0 30px 60px -15px rgba(0,0,0,.12)}
+.item:hover .frame{transform:translateY(-6px);box-shadow:0 24px 48px -16px rgba(0,0,0,.14)}
 .item:hover .frame img{transform:scale(1.06)}
 .meta{display:flex;justify-content:space-between;gap:12px;margin-top:14px;font-size:14px}
 .meta .t{font-weight:500}
 .meta .d{color:var(--muted);text-align:right;white-space:nowrap}
 .sold{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
-.sold::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--sold)}
+.sold::before{content:"";width:7px;height:7px;border-radius:0;background:var(--sold)}
 .rv{filter:blur(20px);opacity:0;transform:scale(1.05)}
 .rv.ok{filter:none;opacity:1;transform:none}
 @keyframes up{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
 /* página da obra */
 .modes{display:flex;gap:8px;margin-bottom:16px}
-.stage{border-radius:24px;background:var(--card);overflow:hidden}
+.stage{border-radius:0;background:var(--card);overflow:hidden}
 .view img{width:100%;height:auto;max-height:82vh;object-fit:contain;cursor:zoom-in;margin:0 auto}
 .wall[hidden],.view[hidden],.thumbs[hidden],.zoomcap[hidden],.wallcap[hidden]{display:none}
 .wall svg{width:100%;height:auto;max-height:82vh;display:block}
 .thumbs{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
-.thumbs button{padding:0;border:2px solid transparent;border-radius:14px;overflow:hidden;background:none;cursor:pointer}
+.thumbs button{padding:0;border:2px solid transparent;border-radius:0;overflow:hidden;background:none;cursor:pointer}
 .thumbs button[aria-current="true"]{border-color:var(--ink)}
 .thumbs img{width:72px;height:72px;object-fit:cover}
 .cap{font-size:13px;color:var(--muted);margin:10px 0 0}
-.obra-txt{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(240px,.7fr);gap:32px 48px;margin-top:48px}
-.obra-txt h1{font-size:clamp(34px,4vw,52px)}
+.obra{display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,320px);gap:clamp(28px,3.5vw,56px);align-items:start}
+.obra-txt{position:sticky;top:40px;display:flex;flex-direction:column;gap:22px;padding-top:56px}
+.obra-txt .serie{margin-top:10px}
+.ficha{border-top:1px solid var(--line);padding-top:18px}
+.obra-txt h1{font-size:clamp(30px,2.8vw,42px)}
 .obra-txt .serie{margin-top:14px;color:var(--muted)}
 .ficha{margin:0;display:grid;gap:4px;font-size:14px;color:var(--muted)}
 .ficha dd{margin:0}
 .ficha .k{display:none}
-.cta{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px;align-items:center}
+.cta{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
 .pn{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;border-top:1px solid var(--line);margin-top:56px;padding-top:32px}
 /* sobre */
 .sobre{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(28px,4vw,56px);align-items:start}
 .sobre figure{margin:0;position:sticky;top:40px}
-.sobre img{width:100%;aspect-ratio:3/4;object-fit:cover;object-position:50% 35%;border-radius:24px}
+.sobre img{width:100%;aspect-ratio:3/4;object-fit:cover;object-position:50% 35%;border-radius:0}
 .sobre h1{font-size:clamp(34px,3.6vw,48px)}
 .sobre .sub{color:var(--muted);margin:8px 0 0;padding-bottom:24px;border-bottom:1px solid var(--line)}
 .sobre .txt>p{margin:22px 0 0;color:#4a443e;font-size:15.5px}
@@ -218,7 +221,7 @@ h1,h2,h3{font-family:var(--fd);font-weight:500;letter-spacing:-.025em;line-heigh
 #lb.on{display:flex;align-items:center;justify-content:center}
 #lb img{max-width:92vw;max-height:90vh;object-fit:contain;transform-origin:center;cursor:zoom-in;user-select:none}
 #lb.z img{cursor:grab}
-#lb button{position:absolute;top:16px;right:16px;width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.15);color:#fff;font-size:22px;cursor:pointer}
+#lb button{position:absolute;top:16px;right:16px;width:44px;height:44px;border-radius:0;border:0;background:rgba(255,255,255,.15);color:#fff;font-size:22px;cursor:pointer}
 /* celular */
 @media (max-width:900px){
  .side{inset:0;width:auto;padding:84px 20px 28px;opacity:0;visibility:hidden;transition:opacity .35s var(--ease),visibility .35s}
@@ -231,9 +234,11 @@ h1,h2,h3{font-family:var(--fd);font-weight:500;letter-spacing:-.025em;line-heigh
  .mtop a{font-family:var(--fd);font-weight:500;font-size:22px;letter-spacing:-.02em;text-decoration:none}
  .main{margin:0;padding:8px 20px 56px}
  .grid{gap:32px 14px}
- .obra-txt,.sobre{grid-template-columns:1fr}
+ .obra,.sobre{grid-template-columns:1fr}
+ .obra-txt{position:static;padding-top:8px}
  .sobre figure{position:static}
 }
+@media (max-width:1180px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:560px){.grid{grid-template-columns:1fr}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}.item{opacity:1}.rv{filter:none;opacity:1;transform:none}}
 """
@@ -378,15 +383,15 @@ def build(args):
                f'<div class="cta"><a class="pill dark" href="https://wa.me/{ARTISTA["whats"]}?text={quote(msg)}" target="_blank" rel="noopener">Consultar valor</a>'
                f'<a class="pill ico" href="mailto:{ARTISTA["email"]}?subject={quote("Obra: " + w["t"])}&body={quote(msg)}" aria-label="Consultar por e-mail">{IC_EM}</a></div>')
         ant, prox = W[i - 1], W[(i + 1) % len(W)]
-        corpo = (f'<article><div class="modes" role="group" aria-label="Visualização">'
+        corpo = (f'<article><div class="obra"><div><div class="modes" role="group" aria-label="Visualização">'
                  f'<button class="pill" type="button" data-m="obra" aria-pressed="true">Obra</button><button class="pill" type="button" data-m="parede" aria-pressed="false">Na parede</button></div>'
                  f'<div class="wall stage" hidden>{parede(w, tam)}</div>'
                  f'<div class="view stage"><img src="../img/{w["foto"]}.jpg" data-zoom="../img/{w["foto"]}.jpg" alt="{e(w["t"])}"></div>'
                  f'<p class="cap wallcap" hidden>Simulação em escala aproximada na parede do ateliê. A artista tem 1,60 m.</p>'
-                 f'<div class="thumbs">{thumbs}</div><p class="cap zoomcap">Toque na imagem para ampliar.</p>'
-                 f'<div class="obra-txt"><div><h1>{e(w["t"])}</h1>'
+                 f'<div class="thumbs">{thumbs}</div><p class="cap zoomcap">Toque na imagem para ampliar.</p></div>'
+                 f'<aside class="obra-txt"><div><h1>{e(w["t"])}</h1>'
                  + (f'<p class="serie">Série {e(w["s"])}</p>' if w["s"] else "") + '</div>'
-                 f'<div><dl class="ficha">{"".join(f"<dt class=k>{k}</dt><dd>{e(v)}</dd>" for k, v in ficha if v)}</dl>{cta}</div></div>'
+                 f'<dl class="ficha">{"".join(f"<dt class=k>{k}</dt><dd>{e(v)}</dd>" for k, v in ficha if v)}</dl>{cta}</aside></div>'
                  f'<nav class="pn" aria-label="Outras obras"><a class="pill" href="{ant["slug"]}.html">← {e(ant["t"])}</a><a class="pill" href="{prox["slug"]}.html">{e(prox["t"])} →</a></nav></article>')
         desc = f'{w["t"]}' + (f', {w["a"]}' if w["a"] else "") + f'. {w["tec"] + ", " if w["tec"] else ""}{w["dim"]} cm. Obra de {nome}.'
         open(os.path.join(args.out, "obras", w["slug"] + ".html"), "w").write(pagina(f'{w["t"]} · {nome}', desc, corpo, "../", "obras", og=f'../img/{w["foto"]}.jpg'))
