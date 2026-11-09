@@ -153,16 +153,27 @@ h1,h2,h3{font-family:var(--fd);font-weight:500;letter-spacing:-.025em;line-heigh
 .ico{width:40px;height:40px;padding:0;border:0;background:var(--pill)}
 .ico svg{width:17px;height:17px}
 /* barra lateral */
-.side{position:fixed;inset:0 auto 0 0;width:var(--side);display:flex;flex-direction:column;padding:40px 32px;z-index:20;background:var(--bg)}
+.side{position:fixed;inset:0 auto 0 0;width:var(--side);display:flex;flex-direction:column;padding:40px 32px;z-index:20;background:var(--bg);overflow-y:auto;scrollbar-width:none}
+.side .bottom{padding-top:32px}
 .brand{text-decoration:none;display:block}
 .brand b{display:block;font-family:var(--fd);font-weight:500;font-size:46px;line-height:.98;letter-spacing:-.035em}
 .brand span{display:block;margin-top:10px;font-size:14px;color:var(--muted)}
 .side nav{display:flex;flex-direction:column;align-items:flex-start;gap:10px;margin-top:48px}
-.sub{display:flex;flex-direction:column;gap:3px;padding:4px 0 10px 14px;border-left:1px solid var(--line);margin-left:2px}
-.sub span{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
-.sub a{font-size:14px;text-decoration:none;color:var(--muted);padding:1px 0}
-.sub a:hover,.sub a[aria-current="page"]{color:var(--ink)}
-.sub a[aria-current="page"]{text-decoration:underline;text-underline-offset:4px}
+.dd{width:100%;max-width:224px}
+.dd summary{list-style:none;user-select:none}
+.dd summary::-webkit-details-marker{display:none}
+.dd summary.on,.dd[open] summary{background:var(--pill)}
+.chev{width:12px;height:12px;transition:transform .35s var(--ease)}
+.dd[open] .chev{transform:rotate(180deg)}
+.ddp{display:flex;flex-direction:column;margin-top:8px;border:1px solid var(--line);background:#fff;padding:6px;animation:dd .35s var(--ease)}
+.ddp a{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:8px 10px;font-size:14px;text-decoration:none;color:#4a4642;transition:background-color .2s,color .2s}
+.ddp a small{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.ddp a:hover{background:var(--card);color:var(--ink)}
+.ddp a[aria-current="page"]{background:var(--ink);color:#fff}
+.ddp a[aria-current="page"] small{color:rgba(255,255,255,.65)}
+.ddp a:last-child{margin-top:4px;border-top:1px solid var(--line);padding-top:12px}
+.ddp a:last-child:hover,.ddp a:last-child[aria-current="page"]{border-top-color:transparent}
+@keyframes dd{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:none}}
 .shead{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:24px 48px;align-items:end;padding-bottom:28px;margin-bottom:32px;border-bottom:1px solid var(--line)}
 .shead h1{font-size:clamp(34px,4vw,56px)}
 .shead .n{font-size:14px;color:var(--muted);margin-top:10px}
@@ -239,7 +250,8 @@ h1,h2,h3{font-family:var(--fd);font-weight:500;letter-spacing:-.025em;line-heigh
  body.menu-on .side{opacity:1;visibility:visible}
  .side .brand{display:none}
  .side nav{margin-top:12px}
- .sub a{font-size:16px}
+ .dd{max-width:none}
+ .ddp a{font-size:16px;padding:11px 12px}
  .shead{grid-template-columns:1fr}
  .filters{flex-wrap:nowrap;overflow-x:auto;margin-inline:-20px;padding-inline:20px;scrollbar-width:none}.filters::-webkit-scrollbar{display:none}.filters .pill{flex:none}.side nav .pill{font-size:18px;padding:12px 24px}
  .mtop{display:flex;position:sticky;top:0;z-index:30;justify-content:space-between;align-items:center;padding:16px 20px;background:var(--bg)}
@@ -305,9 +317,12 @@ def pagina(titulo, desc, corpo, rel, atual, artifact_index=False, og=""):
               '<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-grotesk@500,600&f[]=satoshi@400,500&display=swap">\n'
             + f'<link rel="stylesheet" href="{rel}estilo.css">\n')
     cur = lambda k: ' aria-current="page"' if atual == k else ""
-    sub = "".join(f'<a href="{rel}series/{sl}.html"{cur("s:" + sl)}>{e(n)}</a>' for n, sl in SERIES_NAV)
+    sub = "".join(f'<a href="{rel}series/{sl}.html"{cur("s:" + sl)}><span>{e(n)}</span><small>{c}</small></a>' for n, sl, c in SERIES_NAV)
+    aberto = " open" if atual.startswith("s:") else ""
     menu = (f'<a class="pill" href="{rel}index.html"{cur("obras")}>Obras</a>'
-            f'<div class="sub"><span>Séries</span>{sub}</div>'
+            f'<details class="dd"{aberto}><summary class="pill{" on" if aberto else ""}">Séries'
+            '<svg class="chev" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 4.5 6 8l3.5-3.5" fill="none" stroke="currentColor" stroke-width="1.4"/></svg></summary>'
+            f'<div class="ddp">{sub}</div></details>'
             f'<a class="pill" href="{rel}sobre.html"{cur("sobre")}>Sobre</a>')
     wa = f'https://wa.me/{ARTISTA["whats"]}'
     side = (f'<aside class="side" id="menu"><a class="brand" href="{rel}index.html"><b>Helenara<br>Andrade</b><span>Artista visual · {e(ARTISTA["local"])}</span></a>'
@@ -383,7 +398,7 @@ def build(args):
     nome = ARTISTA["nome"]
     global SERIES_NAV, SERIES_TXT
     SERIES_TXT = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data", "series.json")))
-    SERIES_NAV = [(n, slug(n)) for n in sorted({w["s"] for w in W if w["s"]})] + [("Sem série", "sem-serie")]
+    SERIES_NAV = [(n, slug(n), sum(1 for w in W if w["s"] == n)) for n in sorted({w["s"] for w in W if w["s"]})] + [("Sem série", "sem-serie", sum(1 for w in W if not w["s"]))]
     corpo = (f'<h1 class="sr">Obras de {e(nome)}</h1>'
              f'<div class="grid">{"".join(card(w, "", tam, i) for i, w in enumerate(W))}</div>')
     for arq in ("index.html", "obras.html"):
@@ -392,7 +407,7 @@ def build(args):
     os.makedirs(os.path.join(args.out, "series"), exist_ok=True)
     for f in glob.glob(os.path.join(args.out, "series", "*.html")):
         os.remove(f)
-    for n, sl in SERIES_NAV:
+    for n, sl, _ in SERIES_NAV:
         ws = [w for w in W if (w["s"] or "") == ("" if sl == "sem-serie" else n)]
         txt = SERIES_TXT.get(n, "")
         corpo = (f'<header class="shead"><div><h1>{e(n)}</h1><p class="n">{len(ws)} obra{"s" if len(ws) != 1 else ""}</p></div>'
