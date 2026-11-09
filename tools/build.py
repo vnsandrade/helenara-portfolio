@@ -265,6 +265,62 @@ h1,h2,h3{font-family:var(--fd);font-weight:500;letter-spacing:-.025em;line-heigh
 @media (max-width:1180px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:560px){.grid{grid-template-columns:1fr}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}.item{opacity:1}.rv{filter:none;opacity:1;transform:none}}
+
+/* home: abertura e destaques */
+.home .main{padding:0;margin-left:var(--side)}
+.hero{position:relative;height:100vh;height:100svh;min-height:520px;overflow:hidden;background:#111;color:#fff}
+.hero .sl{position:absolute;inset:0;opacity:0;transition:opacity 1.8s ease}
+.hero .sl.on{opacity:1}
+.hero .sl img{width:100%;height:100%;object-fit:cover;transform:scale(1.02)}
+.hero .sl.on img{animation:kb 9s linear forwards}
+@keyframes kb{from{transform:scale(1.02)}to{transform:scale(1.09)}}
+.hero::after{content:"";position:absolute;inset:auto 0 0 0;height:42%;background:linear-gradient(transparent,rgba(0,0,0,.55));pointer-events:none}
+.hcap{position:absolute;left:40px;right:40px;bottom:36px;z-index:2;display:flex;justify-content:space-between;align-items:flex-end;gap:24px}
+.hcap .lg{font:500 12px/1.3 var(--fb);letter-spacing:.14em;text-transform:uppercase;opacity:.75;margin:0 0 8px}
+.hcap .tt{font-family:var(--fd);font-weight:500;font-size:clamp(26px,3vw,40px);letter-spacing:-.02em;line-height:1.05;margin:0;color:#fff;text-decoration:none;display:block}
+.hcap .tt[hidden]{display:none}
+.hcap .tt span{display:block;font:400 14px/1.4 var(--fb);letter-spacing:0;opacity:.8;margin-top:6px}
+.hctl{display:flex;align-items:center;gap:16px}
+.dots{display:flex;gap:6px}
+.dots button{width:22px;height:2px;padding:0;border:0;background:rgba(255,255,255,.35);cursor:pointer;position:relative;overflow:hidden}
+.dots button.on::after{content:"";position:absolute;inset:0;background:#fff;transform-origin:left;animation:pg 7s linear forwards}
+.hero.paused .dots button.on::after{animation-play-state:paused}
+@keyframes pg{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.pill.light{background:#fff;color:var(--ink);border-color:#fff}
+.sec{padding:96px 40px 0}
+.sec:last-child{padding-bottom:96px}
+.eyebrow{font:500 12px/1.3 var(--fb);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 14px}
+.feat{display:grid;grid-template-columns:minmax(300px,1fr) minmax(0,2fr);gap:48px;align-items:center}
+.feat>div:first-child{position:relative;z-index:1;background:var(--bg)}
+.feat h2{font-size:clamp(32px,3.2vw,48px);overflow-wrap:anywhere}
+.feat p.txt{color:#46423e;font-size:16.5px;line-height:1.65;margin:18px 0 26px;max-width:46ch}
+.strip{overflow:hidden;mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
+.track{display:flex;gap:20px;width:max-content;animation:mq 70s linear infinite}
+.strip:hover .track{animation-play-state:paused}
+@keyframes mq{to{transform:translateX(-50%)}}
+.track a{display:block;text-decoration:none;width:clamp(200px,20vw,280px)}
+.track .frame{aspect-ratio:4/5}
+.track .meta{font-size:13px}
+.shead2{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;margin-bottom:28px}
+.shead2 h2{font-size:clamp(30px,3vw,44px)}
+.sgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:32px 24px}
+.sc .frame{aspect-ratio:4/3}
+.sc{text-decoration:none;display:block}
+.sc b{display:block;font-weight:500;margin-top:12px}
+.sc small{color:var(--muted);font-size:13px}
+.teaser{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:56px;align-items:center;border-top:1px solid var(--line);padding-top:72px}
+.teaser img{width:100%;aspect-ratio:4/3;object-fit:cover;object-position:50% 30%}
+.teaser h2{font-size:clamp(30px,3vw,44px)}
+.teaser p{color:#46423e;font-size:16px;line-height:1.65;margin:18px 0 26px}
+@media (max-width:900px){
+ .home .main{margin:0}
+ .hero{height:78svh}
+ .hcap{left:20px;right:20px;bottom:22px;flex-direction:column;align-items:flex-start}
+ .sec{padding:64px 20px 0}.sec:last-child{padding-bottom:64px}
+ .feat,.teaser{grid-template-columns:1fr;gap:28px}
+ .sgrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (prefers-reduced-motion:reduce){.track{animation:none}.strip{overflow-x:auto}.hero .sl.on img{animation:none}}
 """
 
 LB_JS = """
@@ -294,6 +350,18 @@ UI_JS = """
 (()=>{document.querySelectorAll('img.rv').forEach(i=>{const f=()=>i.classList.add('ok');i.complete&&i.naturalWidth?f():i.addEventListener('load',f)});
 const b=document.querySelector('.mbtn');if(b)b.onclick=()=>{const on=document.body.classList.toggle('menu-on');b.textContent=on?'Fechar':'Menu';b.setAttribute('aria-expanded',on)};})();
 """
+HERO_JS = """
+(()=>{const h=document.querySelector('.hero');if(!h)return;const S=[...h.querySelectorAll('.sl')],D=[...h.querySelectorAll('.dots button')],C=[...h.querySelectorAll('.hcap [data-i]')];
+let i=0,t=null;const red=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const go=n=>{S[i].classList.remove('on');D[i].classList.remove('on');C[i].hidden=true;i=(n+S.length)%S.length;
+ const im=S[i].querySelector('img');if(im.dataset.src){im.src=im.dataset.src;im.removeAttribute('data-src')}
+ S[i].classList.add('on');void D[i].offsetWidth;D[i].classList.add('on');C[i].hidden=false;
+ const nx=S[(i+1)%S.length].querySelector('img');if(nx.dataset.src){nx.src=nx.dataset.src;nx.removeAttribute('data-src')}};
+const run=()=>{clearInterval(t);if(!red)t=setInterval(()=>go(i+1),7000)};
+D.forEach((d,k)=>d.onclick=()=>{go(k);run()});
+h.addEventListener('mouseenter',()=>{clearInterval(t);h.classList.add('paused')});h.addEventListener('mouseleave',()=>{h.classList.remove('paused');run()});
+document.addEventListener('visibilitychange',()=>document.hidden?clearInterval(t):run());go(0);run();})();
+"""
 FILTER_JS = """
 (()=>{const bs=[...document.querySelectorAll('.filters button')];bs.forEach(b=>b.onclick=()=>{const v=b.dataset.s;
 bs.forEach(o=>o.setAttribute('aria-pressed',o===b));document.querySelectorAll('.grid .item').forEach(it=>{it.hidden=v!=='*'&&it.dataset.s!==v})});})();
@@ -308,7 +376,7 @@ IC_EM = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width
 SERIES_NAV, SERIES_TXT = [], {}
 
 
-def pagina(titulo, desc, corpo, rel, atual, artifact_index=False, og=""):
+def pagina(titulo, desc, corpo, rel, atual, artifact_index=False, og="", classe=""):
     head = (f'<title>{e(titulo)}</title>\n<meta name="description" content="{e(desc)}">\n'
             f'<meta property="og:title" content="{e(titulo)}">\n<meta property="og:description" content="{e(desc)}">\n'
             + (f'<meta property="og:image" content="{e(og)}">\n' if og else "")
@@ -333,11 +401,11 @@ def pagina(titulo, desc, corpo, rel, atual, artifact_index=False, og=""):
             f'<div class="copy">© 2026 {e(ARTISTA["nome"])}</div></div></aside>')
     mtop = f'<div class="mtop"><a href="{rel}index.html">Helenara Andrade</a><button class="pill mbtn" aria-controls="menu" aria-expanded="false">Menu</button></div>'
     body = (mtop + side + f'<main class="main">{corpo}</main>'
-            + f'<div id="lb" role="dialog" aria-label="Foto ampliada"><img alt=""><button aria-label="Fechar">×</button></div><script>{LB_JS}{MODES_JS}{UI_JS}{FILTER_JS}</script>')
+            + f'<div id="lb" role="dialog" aria-label="Foto ampliada"><img alt=""><button aria-label="Fechar">×</button></div><script>{LB_JS}{MODES_JS}{UI_JS}{FILTER_JS}{HERO_JS}</script>')
     if artifact_index:  # página principal da prévia no Claude: o host envolve com o esqueleto HTML
         return head + f'<style>{CSS}</style>\n' + body
     return ('<!doctype html>\n<html lang="pt-BR"><head><meta charset="utf-8">'
-            '<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">\n' + head + '</head><body>' + body + '</body></html>')
+            '<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">\n' + head + f'</head><body class="{classe}">' + body + '</body></html>')
 
 
 # obras do catálogo/fora em que a artista passa na frente do quadro (ajustado à mão no Acervo)
@@ -449,6 +517,40 @@ def build(args):
              f'<div class="contatos"><a class="pill dark" href="https://wa.me/{ARTISTA["whats"]}" target="_blank" rel="noopener">{IC_WA} WhatsApp</a>'
              f'<a class="pill" href="mailto:{e(ARTISTA["email"])}">{IC_EM} {e(ARTISTA["email"])}</a>'
              f'<a class="pill" href="https://instagram.com/{ARTISTA["insta"]}" target="_blank" rel="noopener">{IC_IG} @{e(ARTISTA["insta"])}</a></div></div></section>')
+    # prévia da nova página inicial (abertura + série em destaque)
+    por_id = {w["id"]: w for w in W}
+    HERO = [x for x in ("o21", "o08", "o01", "o06", "o30", "o09", "o07", "o02") if x in por_id]
+    sl, caps, dots = [], [], []
+    for k, wid in enumerate(HERO):
+        w = por_id[wid]
+        src = f'img/{w["foto"]}.jpg'
+        ph = ' src="data:image/gif;base64,R0lGODlhAQABAAAAACw="'
+        sl.append(f'<div class="sl"><img {"src" if k < 2 else "data-src"}="{src}" alt="{e(w["t"])}"{"" if k < 2 else ph}></div>')
+        caps.append(f'<a class="tt" data-i="{k}" href="obras/{w["slug"]}.html" hidden>{e(w["t"])}<span>{"Série " + e(w["s"]) + " · " if w["s"] else ""}{e(w["a"])}</span></a>')
+        dots.append(f'<button aria-label="Obra {k + 1}: {e(w["t"])}"></button>')
+    hero = (f'<section class="hero" aria-label="Obras em destaque">{"".join(sl)}'
+            f'<div class="hcap"><div><p class="lg">Helenara Andrade · Pintura</p>{"".join(caps)}</div>'
+            f'<div class="hctl"><div class="dots">{"".join(dots)}</div><a class="pill light" href="obras.html">Ver obras</a></div></div></section>')
+    DEST = "Temporalidades"
+    wd = [w for w in W if w["s"] == DEST]
+    itens = "".join(f'<a href="obras/{w["slug"]}.html" tabindex="-1"><div class="frame"><img src="img/{w["foto"]}-t.jpg" alt="{e(w["t"])}" loading="lazy"></div>'
+                    f'<div class="meta"><span class="t">{e(w["t"])}</span><span class="d">{e(w["dim"])} cm</span></div></a>' for w in wd)
+    feat = (f'<section class="sec"><div class="feat"><div><p class="eyebrow">Série em destaque</p><h2>{e(DEST)}</h2>'
+            f'<p class="txt">{e(SERIES_TXT.get(DEST, ""))}</p><a class="pill dark" href="series/{slug(DEST)}.html">Ver a série · {len(wd)} obras</a></div>'
+            f'<div class="strip"><div class="track">{itens}{itens}</div></div></div></section>')
+    scards = ""
+    for n, sl_, c in SERIES_NAV:
+        if sl_ == "sem-serie":
+            continue
+        capa = next(w for w in W if w["s"] == n)
+        scards += (f'<a class="sc item" href="series/{sl_}.html"><div class="frame"><img class="rv" src="img/{capa["foto"]}-t.jpg" alt="" loading="lazy"></div>'
+                   f'<b>{e(n)}</b><small>{c} obra{"s" if c != 1 else ""}</small></a>')
+    series_sec = (f'<section class="sec"><div class="shead2"><div><p class="eyebrow">Séries</p><h2>Investigações</h2></div>'
+                  f'<a class="pill" href="obras.html">Todas as obras →</a></div><div class="sgrid">{scards}</div></section>')
+    teaser = (f'<section class="sec"><div class="teaser"><img src="img/inicio.jpg" alt="{e(nome)} no ateliê" loading="lazy">'
+              f'<div><p class="eyebrow">Sobre</p><h2>{e(nome)}</h2><p>{e(STATEMENT[0])}</p><a class="pill" href="sobre.html">Conheça a artista</a></div></div></section>')
+    open(os.path.join(args.out, "previa.html"), "w").write(
+        pagina(f"{nome} · Pintura", f"Portfólio da artista visual {nome}.", hero + feat + series_sec + teaser, "", "inicio", og="img/inicio.jpg", classe="home"))
     open(os.path.join(args.out, "sobre.html"), "w").write(pagina(f"Sobre · {nome}", STATEMENT[0][:150], corpo, "", "sobre"))
     # limpa páginas de obras que saíram do site
     validas = {w["slug"] + ".html" for w in W}
