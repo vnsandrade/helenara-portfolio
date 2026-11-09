@@ -136,84 +136,106 @@ def gerar_imagens(keys, media, out):
 
 
 CSS = """
-:root{--bg:#FAFAF8;--ink:#141414;--muted:#6E6E6A;--line:#E4E3DF;--sold:#B23B3B;--btn:#141414;--btn-ink:#fff;
---f:"Helvetica Neue","Neue Haas Grotesk Text Pro",Helvetica,"Inter Tight",Arial,sans-serif;color-scheme:light}
+:root{--bg:#F6F1EA;--ink:#292623;--muted:#7E7367;--card:#EFE8DE;--pill:#EAE2D7;--line:#E3DBD0;--sold:#A8473B;
+--fd:"Clash Grotesk","Helvetica Neue",Helvetica,Arial,sans-serif;--fb:"Satoshi","Helvetica Neue",Helvetica,Arial,sans-serif;
+--ease:cubic-bezier(.16,1,.3,1);--side:288px;color-scheme:light}
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--fb);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased}
 a{color:inherit}
 img{max-width:100%;display:block}
-.wrap{max-width:1360px;margin:0 auto;padding-inline:max(20px,env(safe-area-inset-left,0px))}
-header.top{display:flex;justify-content:space-between;align-items:baseline;gap:16px;flex-wrap:wrap;padding-block:28px}
-.brand{font-size:20px;font-weight:500;letter-spacing:-.02em;text-decoration:none}
-nav.menu{display:flex;gap:26px;font-size:15px}
-nav.menu a{text-decoration:none;color:var(--muted)}
-nav.menu a:hover,nav.menu a[aria-current="page"]{color:var(--ink)}
-.eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
-h1,h2,h3{font-weight:500;letter-spacing:-.025em;margin:0;text-wrap:balance}
-.hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.85fr);gap:clamp(28px,5vw,80px);align-items:end;padding-block:clamp(24px,6vw,72px) clamp(40px,7vw,96px)}
-.hero h1{font-size:clamp(48px,9vw,128px);line-height:.92;letter-spacing:-.05em}
-.hero p{font-size:clamp(17px,1.5vw,20px);max-width:38ch;color:#3a3a37;margin:28px 0 0}
-.hero figure{margin:0}
-.hero img{width:100%;aspect-ratio:3/4;object-fit:cover;object-position:50% 35%}
-.hero figcaption,.cap{font-size:13px;color:var(--muted);margin-top:10px}
-.sec{padding-block:clamp(40px,6vw,80px);border-top:1px solid var(--line)}
-.sechead{display:flex;justify-content:space-between;align-items:baseline;gap:16px;margin-bottom:32px;flex-wrap:wrap}
-.sechead h2{font-size:clamp(28px,3.4vw,44px)}
-.more{font-size:15px}
-.grid{columns:3 320px;column-gap:clamp(20px,3vw,48px)}
+h1,h2,h3{font-family:var(--fd);font-weight:500;letter-spacing:-.025em;line-height:1.05;margin:0;text-wrap:balance}
+.pill{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:999px;padding:10px 20px;font:500 14px/1.25 var(--fb);
+ text-decoration:none;border:1px solid rgba(41,38,35,.2);background:rgba(234,226,215,.5);color:var(--ink);cursor:pointer;transition:background-color .2s,opacity .2s}
+.pill:hover,.pill[aria-current="page"],.pill[aria-pressed="true"]{background:var(--pill)}
+.pill.dark{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.pill.dark:hover{opacity:.85}
+.ico{width:40px;height:40px;padding:0;border:0;background:var(--pill)}
+.ico svg{width:17px;height:17px}
+/* barra lateral */
+.side{position:fixed;inset:0 auto 0 0;width:var(--side);display:flex;flex-direction:column;padding:40px 32px;z-index:20;background:var(--bg)}
+.brand{text-decoration:none;display:block}
+.brand b{display:block;font-family:var(--fd);font-weight:500;font-size:46px;line-height:.98;letter-spacing:-.035em}
+.brand span{display:block;margin-top:10px;font-size:14px;color:var(--muted)}
+.side nav{display:flex;flex-direction:column;align-items:flex-start;gap:10px;margin-top:56px}
+.side .bottom{margin-top:auto;display:flex;flex-direction:column;gap:22px}
+.side .row{display:flex;gap:10px;align-items:center}
+.copy{font-size:12px;color:var(--muted)}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.pill svg{width:16px;height:16px}
+.mtop{display:none}
+.main{margin-left:var(--side);padding:40px clamp(20px,3vw,40px) 64px 0;min-height:100vh}
+/* grade de obras */
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px}
+.filters .pill{padding:8px 16px;font-size:13px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:40px 24px}
 .item[hidden]{display:none}
-.item{break-inside:avoid;display:block;text-decoration:none;margin-bottom:clamp(36px,4vw,56px)}
-.item img{width:100%;height:auto;background:var(--line);transition:opacity .25s}
-.item:hover img{opacity:.88}
-.meta{display:flex;justify-content:space-between;gap:12px;margin-top:12px;font-size:14px}
+.item{display:block;text-decoration:none;opacity:0;animation:up .7s var(--ease) forwards}
+.frame{position:relative;overflow:hidden;border-radius:24px;background:var(--card);aspect-ratio:4/5;transition:transform .6s var(--ease),box-shadow .6s var(--ease)}
+.frame img{width:100%;height:100%;object-fit:cover;transition:transform .8s var(--ease),filter .8s var(--ease),opacity .6s var(--ease)}
+.item:hover .frame{transform:translateY(-8px);box-shadow:0 30px 60px -15px rgba(0,0,0,.12)}
+.item:hover .frame img{transform:scale(1.06)}
+.meta{display:flex;justify-content:space-between;gap:12px;margin-top:14px;font-size:14px}
 .meta .t{font-weight:500}
 .meta .d{color:var(--muted);text-align:right;white-space:nowrap}
 .sold{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
 .sold::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--sold)}
-.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:36px}
-.filters button{font:inherit;font-size:14px;border:1px solid var(--line);background:transparent;border-radius:999px;padding:7px 14px;cursor:pointer;color:var(--muted)}
-.filters button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
-.obra{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(280px,.7fr);gap:clamp(28px,5vw,80px);padding-block:clamp(16px,3vw,40px) clamp(48px,6vw,96px);align-items:start}
-.view img{width:100%;height:auto;max-height:84vh;object-fit:contain;object-position:left top;cursor:zoom-in}
-.modes{display:inline-flex;border:1px solid var(--line);border-radius:999px;padding:3px;margin-bottom:14px}
-.modes button{font:inherit;font-size:14px;border:0;background:transparent;border-radius:999px;padding:6px 16px;cursor:pointer;color:var(--muted)}
-.modes button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
-.wall[hidden],.view[hidden],.thumbs[hidden]{display:none}
-.wall svg{width:100%;height:auto;max-height:84vh;display:block}
+.rv{filter:blur(20px);opacity:0;transform:scale(1.05)}
+.rv.ok{filter:none;opacity:1;transform:none}
+@keyframes up{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+/* página da obra */
+.modes{display:flex;gap:8px;margin-bottom:16px}
+.stage{border-radius:24px;background:var(--card);overflow:hidden}
+.view img{width:100%;height:auto;max-height:82vh;object-fit:contain;cursor:zoom-in;margin:0 auto}
+.wall[hidden],.view[hidden],.thumbs[hidden],.zoomcap[hidden],.wallcap[hidden]{display:none}
+.wall svg{width:100%;height:auto;max-height:82vh;display:block}
 .thumbs{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
-.thumbs button{padding:0;border:2px solid transparent;background:none;cursor:pointer}
+.thumbs button{padding:0;border:2px solid transparent;border-radius:14px;overflow:hidden;background:none;cursor:pointer}
 .thumbs button[aria-current="true"]{border-color:var(--ink)}
-.thumbs img{width:76px;height:76px;object-fit:cover}
-.info{position:sticky;top:24px;display:flex;flex-direction:column;gap:18px}
-.info h1{font-size:clamp(30px,3.6vw,48px);line-height:1.05}
-.info .yr{color:var(--muted);font-weight:400}
-.ficha{margin:0;display:grid;grid-template-columns:auto 1fr;gap:6px 18px;font-size:15px;border-top:1px solid var(--line);padding-top:18px}
-.ficha dt{color:var(--muted)}
+.thumbs img{width:72px;height:72px;object-fit:cover}
+.cap{font-size:13px;color:var(--muted);margin:10px 0 0}
+.obra-txt{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(240px,.7fr);gap:32px 48px;margin-top:48px}
+.obra-txt h1{font-size:clamp(34px,4vw,52px)}
+.obra-txt .serie{margin-top:14px;color:var(--muted)}
+.ficha{margin:0;display:grid;gap:4px;font-size:14px;color:var(--muted)}
 .ficha dd{margin:0}
-.cta{display:flex;flex-direction:column;gap:10px;border-top:1px solid var(--line);padding-top:18px}
-.btn{display:inline-flex;justify-content:center;align-items:center;gap:8px;font:inherit;font-size:15px;font-weight:500;padding:13px 20px;border-radius:2px;text-decoration:none;border:1px solid var(--ink)}
-.btn.solid{background:var(--btn);color:var(--btn-ink)}
-.btn:hover{opacity:.85}
-.pn{display:flex;justify-content:space-between;gap:16px;border-top:1px solid var(--line);padding-top:18px;font-size:14px}
-.pn a{text-decoration:none;color:var(--muted)}.pn a:hover{color:var(--ink)}
-.sobre{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:clamp(28px,5vw,80px);padding-block:clamp(24px,5vw,64px) clamp(48px,6vw,96px);align-items:start}
-.sobre img{width:100%;aspect-ratio:3/4;object-fit:cover;object-position:50% 35%}
-.sobre .txt{display:flex;flex-direction:column;gap:22px;max-width:62ch}
-.sobre .txt>p{font-size:clamp(17px,1.4vw,20px);margin:0}
-.cv{display:grid;gap:28px;margin-top:20px;border-top:1px solid var(--line);padding-top:28px}
-.cv h3{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:500;margin-bottom:10px}
-.cv ul{list-style:none;margin:0;padding:0;display:grid;gap:6px;font-size:15px}
-footer.foot{border-top:1px solid var(--line);padding-block:48px 64px;display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:24px;font-size:15px}
-footer.foot a{text-decoration:none}footer.foot a:hover{text-decoration:underline}
-footer.foot .big{font-size:clamp(24px,3vw,36px);font-weight:500;letter-spacing:-.025em;grid-column:1/-1}
-#lb{position:fixed;inset:0;background:rgba(10,10,10,.96);display:none;z-index:50;overflow:hidden;touch-action:none}
+.ficha .k{display:none}
+.cta{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px;align-items:center}
+.pn{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;border-top:1px solid var(--line);margin-top:56px;padding-top:32px}
+/* sobre */
+.sobre{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(28px,4vw,56px);align-items:start}
+.sobre figure{margin:0;position:sticky;top:40px}
+.sobre img{width:100%;aspect-ratio:3/4;object-fit:cover;object-position:50% 35%;border-radius:24px}
+.sobre h1{font-size:clamp(34px,3.6vw,48px)}
+.sobre .sub{color:var(--muted);margin:8px 0 0;padding-bottom:24px;border-bottom:1px solid var(--line)}
+.sobre .txt>p{margin:22px 0 0;color:#4a443e;font-size:15.5px}
+.cv{display:grid;gap:26px;margin-top:36px;border-top:1px solid var(--line);padding-top:30px}
+.cv h3{font:500 12px/1.3 var(--fb);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.cv ul{list-style:none;margin:0;padding:0;display:grid;gap:6px;font-size:14.5px}
+.contatos{display:flex;flex-wrap:wrap;gap:10px;margin-top:30px}
+/* zoom */
+#lb{position:fixed;inset:0;background:rgba(20,18,16,.96);display:none;z-index:50;overflow:hidden;touch-action:none}
 #lb.on{display:flex;align-items:center;justify-content:center}
 #lb img{max-width:92vw;max-height:90vh;object-fit:contain;transform-origin:center;cursor:zoom-in;user-select:none}
 #lb.z img{cursor:grab}
 #lb button{position:absolute;top:16px;right:16px;width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.15);color:#fff;font-size:22px;cursor:pointer}
-@media (max-width:820px){.hero,.obra,.sobre{grid-template-columns:1fr}.hero figure{order:-1}.info{position:static}nav.menu{gap:18px}}
-@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+/* celular */
+@media (max-width:900px){
+ .side{inset:0;width:auto;padding:84px 20px 28px;opacity:0;visibility:hidden;transition:opacity .35s var(--ease),visibility .35s}
+ body.menu-on{overflow:hidden}
+ body.menu-on .side{opacity:1;visibility:visible}
+ .side .brand{display:none}
+ .side nav{margin-top:12px}
+ .filters{flex-wrap:nowrap;overflow-x:auto;margin-inline:-20px;padding-inline:20px;scrollbar-width:none}.filters::-webkit-scrollbar{display:none}.filters .pill{flex:none}.side nav .pill{font-size:18px;padding:12px 24px}
+ .mtop{display:flex;position:sticky;top:0;z-index:30;justify-content:space-between;align-items:center;padding:16px 20px;background:var(--bg)}
+ .mtop a{font-family:var(--fd);font-weight:500;font-size:22px;letter-spacing:-.02em;text-decoration:none}
+ .main{margin:0;padding:8px 20px 56px}
+ .grid{gap:32px 14px}
+ .obra-txt,.sobre{grid-template-columns:1fr}
+ .sobre figure{position:static}
+}
+@media (max-width:560px){.grid{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}.item{opacity:1}.rv{filter:none;opacity:1;transform:none}}
 """
 
 LB_JS = """
@@ -237,7 +259,11 @@ MODES_JS = """
 (()=>{const bs=[...document.querySelectorAll('.modes button')];if(!bs.length)return;
 bs.forEach(b=>b.onclick=()=>{const p=b.dataset.m==='parede';bs.forEach(o=>o.setAttribute('aria-pressed',o===b));
 document.querySelector('.wall').hidden=!p;document.querySelector('.view').hidden=p;
-const t=document.querySelector('.thumbs');if(t)t.hidden=p;const c=document.querySelector('.zoomcap');if(c)c.hidden=p;})})();
+const t=document.querySelector('.thumbs');if(t)t.hidden=p;const c=document.querySelector('.zoomcap');if(c)c.hidden=p;const wc=document.querySelector('.wallcap');if(wc)wc.hidden=!p;})})();
+"""
+UI_JS = """
+(()=>{document.querySelectorAll('img.rv').forEach(i=>{const f=()=>i.classList.add('ok');i.complete&&i.naturalWidth?f():i.addEventListener('load',f)});
+const b=document.querySelector('.mbtn');if(b)b.onclick=()=>{const on=document.body.classList.toggle('menu-on');b.textContent=on?'Fechar':'Menu';b.setAttribute('aria-expanded',on)};})();
 """
 FILTER_JS = """
 (()=>{const bs=[...document.querySelectorAll('.filters button')];bs.forEach(b=>b.onclick=()=>{const v=b.dataset.s;
@@ -245,22 +271,31 @@ bs.forEach(o=>o.setAttribute('aria-pressed',o===b));document.querySelectorAll('.
 """
 
 
+IC_WA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11.5a8 8 0 0 1-11.8 7L4 20l1.5-4.1A8 8 0 1 1 20 11.5z"/></svg>'
+IC_IG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.3" cy="6.7" r="1" fill="currentColor" stroke="none"/></svg>'
+IC_EM = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="3"/><path d="m4 7 8 6 8-6"/></svg>'
+
+
 def pagina(titulo, desc, corpo, rel, atual, artifact_index=False, og=""):
     head = (f'<title>{e(titulo)}</title>\n<meta name="description" content="{e(desc)}">\n'
             f'<meta property="og:title" content="{e(titulo)}">\n<meta property="og:description" content="{e(desc)}">\n'
             + (f'<meta property="og:image" content="{e(og)}">\n' if og else "")
-            + '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>\n'
-              '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&display=swap">\n'
+            + '<meta name="theme-color" content="#F6F1EA">\n'
+              '<link rel="preconnect" href="https://api.fontshare.com" crossorigin>\n'
+              '<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=clash-grotesk@500,600&f[]=satoshi@400,500&display=swap">\n'
             + f'<link rel="stylesheet" href="{rel}estilo.css">\n')
-    menu = "".join(f'<a href="{rel}{h}"{" aria-current=\"page\"" if atual == k else ""}>{n}</a>'
-                   for k, h, n in (("obras", "obras.html", "Obras"), ("sobre", "sobre.html", "Sobre"), ("contato", "#contato", "Contato")))
-    topo = f'<div class="wrap"><header class="top"><a class="brand" href="{rel}index.html">{e(ARTISTA["nome"])}</a><nav class="menu" aria-label="Menu">{menu}</nav></header></div>'
-    rodape = (f'<div class="wrap"><footer class="foot" id="contato"><div class="big">Contato</div>'
-              f'<div><div class="eyebrow">WhatsApp</div><a href="https://wa.me/{ARTISTA["whats"]}" target="_blank" rel="noopener">{e(ARTISTA["fone"])}</a></div>'
-              f'<div><div class="eyebrow">E-mail</div><a href="mailto:{e(ARTISTA["email"])}">{e(ARTISTA["email"])}</a></div>'
-              f'<div><div class="eyebrow">Instagram</div><a href="https://instagram.com/{ARTISTA["insta"]}" target="_blank" rel="noopener">@{e(ARTISTA["insta"])}</a></div>'
-              f'<div><div class="eyebrow">Ateliê</div>{e(ARTISTA["local"])}</div></footer></div>')
-    body = topo + corpo + rodape + f'<div id="lb" role="dialog" aria-label="Foto ampliada"><img alt=""><button aria-label="Fechar">×</button></div><script>{LB_JS}{MODES_JS}{FILTER_JS}</script>'
+    menu = "".join(f'<a class="pill" href="{rel}{h}"{" aria-current=\"page\"" if atual == k else ""}>{n}</a>'
+                   for k, h, n in (("obras", "index.html", "Obras"), ("sobre", "sobre.html", "Sobre")))
+    wa = f'https://wa.me/{ARTISTA["whats"]}'
+    side = (f'<aside class="side" id="menu"><a class="brand" href="{rel}index.html"><b>Helenara<br>Andrade</b><span>Artista visual · {e(ARTISTA["local"])}</span></a>'
+            f'<nav aria-label="Menu">{menu}</nav>'
+            f'<div class="bottom"><div class="row"><a class="pill" href="{wa}" target="_blank" rel="noopener">Fale comigo</a>'
+            f'<a class="pill ico" href="https://instagram.com/{ARTISTA["insta"]}" target="_blank" rel="noopener" aria-label="Instagram @{e(ARTISTA["insta"])}">{IC_IG}</a>'
+            f'<a class="pill ico" href="mailto:{e(ARTISTA["email"])}" aria-label="E-mail {e(ARTISTA["email"])}">{IC_EM}</a></div>'
+            f'<div class="copy">© 2026 {e(ARTISTA["nome"])}</div></div></aside>')
+    mtop = f'<div class="mtop"><a href="{rel}index.html">Helenara Andrade</a><button class="pill mbtn" aria-controls="menu" aria-expanded="false">Menu</button></div>'
+    body = (mtop + side + f'<main class="main">{corpo}</main>'
+            + f'<div id="lb" role="dialog" aria-label="Foto ampliada"><img alt=""><button aria-label="Fechar">×</button></div><script>{LB_JS}{MODES_JS}{UI_JS}{FILTER_JS}</script>')
     if artifact_index:  # página principal da prévia no Claude: o host envolve com o esqueleto HTML
         return head + f'<style>{CSS}</style>\n' + body
     return ('<!doctype html>\n<html lang="pt-BR"><head><meta charset="utf-8">'
@@ -297,10 +332,10 @@ def parede(w, tam):
             + ('<image href="../img/pessoa.png" x="629" y="545.1" width="461" height="1167"/>' if pessoa else "") + '</svg>')
 
 
-def card(w, rel, tam):
+def card(w, rel, tam, i=0):
     tw, th = tam.get(w["foto"], (720, 900))
-    return (f'<a class="item" href="{rel}obras/{w["slug"]}.html" data-s="{e(w["s"] or "—")}">'
-            f'<img src="{rel}img/{w["foto"]}-t.jpg" width="{tw}" height="{th}" alt="{e(w["t"])}" loading="lazy">'
+    return (f'<a class="item" href="{rel}obras/{w["slug"]}.html" data-s="{e(w["s"] or "—")}" style="animation-delay:{min(i, 10) * 60}ms">'
+            f'<div class="frame"><img class="rv" src="{rel}img/{w["foto"]}-t.jpg" width="{tw}" height="{th}" alt="{e(w["t"])}" loading="lazy"></div>'
             f'<div class="meta"><span><span class="t">{e(w["t"])}</span>{", " + e(w["a"]) if w["a"] else ""}'
             f'{"<br><span class=sold>Vendida</span>" if w["vendida"] else ""}</span><span class="d">{e(w["dim"])} cm</span></div></a>')
 
@@ -323,54 +358,46 @@ def build(args):
         shutil.copyfile(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data", "parede", f), os.path.join(args.out, "img", f))
     open(os.path.join(args.out, "estilo.css"), "w").write(CSS)
     nome = ARTISTA["nome"]
-    recentes = [w for w in W if w["a"] and int(w["a"]) >= max(int(x["a"]) for x in W if x["a"].isdigit()) - 0][:9] or W[:9]
-    # início
-    corpo = (f'<main class="wrap"><section class="hero"><div><div class="eyebrow">Pintura · {e(ARTISTA["local"])}</div>'
-             f'<h1>{e(nome)}</h1><p>{e(STATEMENT[0].split(", buscando")[0])}.</p>'
-             f'<p><a class="btn" href="obras.html">Ver obras</a></p></div>'
-             f'<figure><img src="img/inicio.jpg" alt="{e(nome)} no ateliê"><figcaption>{e(nome)} no ateliê</figcaption></figure></section>'
-             f'<section class="sec"><div class="sechead"><h2>Obras recentes</h2><a class="more" href="obras.html">Todas as obras ({len(W)}) →</a></div>'
-             f'<div class="grid">{"".join(card(w, "", tam) for w in recentes)}</div></section></main>')
-    open(os.path.join(args.out, "index.html"), "w").write(pagina(f"{nome} · Pintura", "Portfólio da artista visual " + nome + ": pinturas, séries e exposições.", corpo, "", "inicio", args.artifact, "img/inicio.jpg"))
-    # obras
     series = sorted({w["s"] for w in W if w["s"]})
-    filtros = '<button data-s="*" aria-pressed="true">Todas</button>' + "".join(f'<button data-s="{e(s)}" aria-pressed="false">{e(s)}</button>' for s in series)
-    corpo = (f'<main class="wrap"><section class="sec" style="border-top:0;padding-top:16px"><div class="sechead"><h2>Obras</h2><span class="cap">{len(W)} obras</span></div>'
-             f'<div class="filters" role="group" aria-label="Filtrar por série">{filtros}</div>'
-             f'<div class="grid">{"".join(card(w, "", tam) for w in W)}</div></section></main>')
-    open(os.path.join(args.out, "obras.html"), "w").write(pagina(f"Obras · {nome}", f"{len(W)} obras de {nome}.", corpo, "", "obras"))
+    filtros = '<button class="pill" data-s="*" aria-pressed="true">Todas</button>' + "".join(f'<button class="pill" data-s="{e(s)}" aria-pressed="false">{e(s)}</button>' for s in series)
+    corpo = (f'<h1 class="sr">Obras de {e(nome)}</h1><div class="filters" role="group" aria-label="Filtrar por série">{filtros}</div>'
+             f'<div class="grid">{"".join(card(w, "", tam, i) for i, w in enumerate(W))}</div>')
+    for arq in ("index.html", "obras.html"):
+        open(os.path.join(args.out, arq), "w").write(pagina(f"{nome} · Pintura", f"Portfólio da artista visual {nome}: {len(W)} pinturas, séries e exposições.", corpo, "", "obras", args.artifact and arq == "index.html", "img/inicio.jpg"))
     # cada obra
     for i, w in enumerate(W):
         fotos = [w["foto"]] + w["detalhes"]
         thumbs = "".join(f'<button data-src="../img/{k}.jpg" data-full="../img/{k}.jpg" aria-current="{"true" if j == 0 else "false"}" aria-label="Foto {j + 1}"><img src="../img/{k}-t.jpg" alt="" loading="lazy"></button>'
                          for j, k in enumerate(fotos)) if len(fotos) > 1 else ""
-        ficha = [("Ano", w["a"]), ("Técnica", w["tec"]), ("Materiais", w["mat"] if w["mat"] != "Díptico" else ""),
-                 ("Dimensões", f'{w["dim"]} cm'), ("Formato", "Díptico" if w["q"] > 1 else ""), ("Série", w["s"])]
+        ficha = [("Técnica", w["tec"]), ("Materiais", w["mat"] if w["mat"] != "Díptico" else ""),
+                 ("Dimensões", f'{w["dim"]} cm'.replace(" x ", " × ")), ("Formato", "Díptico" if w["q"] > 1 else ""), ("Ano", w["a"])]
         msg = f'Olá, Helenara! Tenho interesse na obra "{w["t"]}"' + (f' ({w["a"]})' if w["a"] else "") + "."
         from urllib.parse import quote
-        cta = ('<div class="cta"><span class="sold">Vendida</span><span class="cap" style="margin:0">Esta obra pertence a uma coleção particular. Para obras disponíveis ou encomendas, fale com a artista.</span>'
-               f'<a class="btn" href="https://wa.me/{ARTISTA["whats"]}" target="_blank" rel="noopener">Falar com a artista</a></div>') if w["vendida"] else (
-               '<div class="cta"><span class="cap" style="margin:0">Valor sob consulta.</span>'
-               f'<a class="btn solid" href="https://wa.me/{ARTISTA["whats"]}?text={quote(msg)}" target="_blank" rel="noopener">Consultar pelo WhatsApp</a>'
-               f'<a class="btn" href="mailto:{ARTISTA["email"]}?subject={quote("Obra: " + w["t"])}&body={quote(msg)}">Enviar e-mail</a></div>')
+        cta = ('<div class="cta"><span class="sold">Vendida · coleção particular</span>'
+               f'<a class="pill" href="https://wa.me/{ARTISTA["whats"]}" target="_blank" rel="noopener">Falar com a artista</a></div>') if w["vendida"] else (
+               f'<div class="cta"><a class="pill dark" href="https://wa.me/{ARTISTA["whats"]}?text={quote(msg)}" target="_blank" rel="noopener">Consultar valor</a>'
+               f'<a class="pill ico" href="mailto:{ARTISTA["email"]}?subject={quote("Obra: " + w["t"])}&body={quote(msg)}" aria-label="Consultar por e-mail">{IC_EM}</a></div>')
         ant, prox = W[i - 1], W[(i + 1) % len(W)]
-        corpo = (f'<main class="wrap"><article class="obra"><div><div class="modes" role="group" aria-label="Visualização">'
-                 f'<button type="button" data-m="obra" aria-pressed="true">Obra</button><button type="button" data-m="parede" aria-pressed="false">Na parede</button></div>'
-                 f'<div class="wall" hidden>{parede(w, tam)}<p class="cap">Simulação em escala aproximada na parede do ateliê. A artista tem 1,60 m.</p></div>'
-                 f'<div class="view"><img src="../img/{w["foto"]}.jpg" data-zoom="../img/{w["foto"]}.jpg" alt="{e(w["t"])}"></div>'
-                 f'<div class="thumbs">{thumbs}</div><p class="cap zoomcap">Toque na imagem para ampliar.</p></div>'
-                 f'<div class="info"><a class="cap" href="../obras.html" style="margin:0;text-decoration:none">← Obras</a>'
-                 f'<h1>{e(w["t"])}{", <span class=yr>" + e(w["a"]) + "</span>" if w["a"] else ""}</h1>'
-                 f'<dl class="ficha">{"".join(f"<dt>{k}</dt><dd>{e(v)}</dd>" for k, v in ficha if v)}</dl>{cta}'
-                 f'<nav class="pn" aria-label="Outras obras"><a href="{ant["slug"]}.html">← {e(ant["t"])}</a><a href="{prox["slug"]}.html">{e(prox["t"])} →</a></nav></div></article></main>')
+        corpo = (f'<article><div class="modes" role="group" aria-label="Visualização">'
+                 f'<button class="pill" type="button" data-m="obra" aria-pressed="true">Obra</button><button class="pill" type="button" data-m="parede" aria-pressed="false">Na parede</button></div>'
+                 f'<div class="wall stage" hidden>{parede(w, tam)}</div>'
+                 f'<div class="view stage"><img src="../img/{w["foto"]}.jpg" data-zoom="../img/{w["foto"]}.jpg" alt="{e(w["t"])}"></div>'
+                 f'<p class="cap wallcap" hidden>Simulação em escala aproximada na parede do ateliê. A artista tem 1,60 m.</p>'
+                 f'<div class="thumbs">{thumbs}</div><p class="cap zoomcap">Toque na imagem para ampliar.</p>'
+                 f'<div class="obra-txt"><div><h1>{e(w["t"])}</h1>'
+                 + (f'<p class="serie">Série {e(w["s"])}</p>' if w["s"] else "") + '</div>'
+                 f'<div><dl class="ficha">{"".join(f"<dt class=k>{k}</dt><dd>{e(v)}</dd>" for k, v in ficha if v)}</dl>{cta}</div></div>'
+                 f'<nav class="pn" aria-label="Outras obras"><a class="pill" href="{ant["slug"]}.html">← {e(ant["t"])}</a><a class="pill" href="{prox["slug"]}.html">{e(prox["t"])} →</a></nav></article>')
         desc = f'{w["t"]}' + (f', {w["a"]}' if w["a"] else "") + f'. {w["tec"] + ", " if w["tec"] else ""}{w["dim"]} cm. Obra de {nome}.'
         open(os.path.join(args.out, "obras", w["slug"] + ".html"), "w").write(pagina(f'{w["t"]} · {nome}', desc, corpo, "../", "obras", og=f'../img/{w["foto"]}.jpg'))
     # sobre
     cv = "".join(f'<div><h3>{e(t)}</h3><ul>{"".join(f"<li>{e(x)}</li>" for x in L)}</ul></div>' for t, L in CV)
-    corpo = (f'<main class="wrap"><section class="sobre"><figure style="margin:0"><img src="img/inicio.jpg" alt="{e(nome)} no ateliê"></figure>'
-             f'<div class="txt"><div class="eyebrow">Sobre</div><h1 style="font-size:clamp(34px,4vw,56px)">{e(nome)}</h1>'
-             f'<p class="cap" style="margin:0">Nascida em Porto Alegre/RS. Vive e trabalha em Curitiba/PR.</p>'
-             + "".join(f"<p>{e(p)}</p>" for p in STATEMENT) + f'<div class="cv">{cv}</div></div></section></main>')
+    corpo = (f'<section class="sobre"><figure><img class="rv" src="img/inicio.jpg" alt="{e(nome)} no ateliê"></figure>'
+             f'<div class="txt"><h1>Olá, sou a Helenara</h1><p class="sub">Artista visual. Nascida em Porto Alegre/RS, vive e trabalha em Curitiba/PR.</p>'
+             + "".join(f"<p>{e(p)}</p>" for p in STATEMENT) + f'<div class="cv">{cv}</div>'
+             f'<div class="contatos"><a class="pill dark" href="https://wa.me/{ARTISTA["whats"]}" target="_blank" rel="noopener">{IC_WA} WhatsApp</a>'
+             f'<a class="pill" href="mailto:{e(ARTISTA["email"])}">{IC_EM} {e(ARTISTA["email"])}</a>'
+             f'<a class="pill" href="https://instagram.com/{ARTISTA["insta"]}" target="_blank" rel="noopener">{IC_IG} @{e(ARTISTA["insta"])}</a></div></div></section>')
     open(os.path.join(args.out, "sobre.html"), "w").write(pagina(f"Sobre · {nome}", STATEMENT[0][:150], corpo, "", "sobre"))
     # limpa páginas de obras que saíram do site
     validas = {w["slug"] + ".html" for w in W}
