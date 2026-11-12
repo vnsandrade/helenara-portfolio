@@ -25,12 +25,10 @@ ARTISTA = {
     "insta": "helenarandrade",
 }
 STATEMENT = [
-    "Meu trabalho artístico é impulsionado pela investigação das inúmeras possibilidades da tinta. "
-    "Desenvolvo minhas próprias tintas e materiais pictóricos, explorando diferentes formulações, e trabalho com "
-    "camadas sucessivas, diluições calculadas e cores em constante contraste, buscando criar um diálogo entre o caos e a harmonia.",
-    "Espátulas de diferentes tamanhos são minhas ferramentas principais, utilizadas tanto para gerar transições sutis "
-    "quanto para formar bordas duras e arestas cortantes que emergem da superfície com intensidade. O resultado são "
-    "superfícies expressivas, nas quais o movimento da tinta materializa conflitos e resoluções internas.",
+    "Minha pesquisa artística parte da investigação do comportamento da matéria na pintura.",
+    "Trabalho com tintas acrílicas e a óleo, resinas e minerais, como óxidos, quartzo e mica. Exploro diferentes proporções, diluições e densidades, observando como esses materiais interagem entre si e respondem aos movimentos de pincéis, espátulas e outros instrumentos.",
+    "O comportamento da matéria orienta a construção da composição. Por meio de depósitos, arrastos e sobreposições, acompanho os deslocamentos, as resistências e as transformações que surgem durante o processo. As camadas ora preservam seus limites, ora se misturam, revelando novas possibilidades pictóricas.",
+    "Minha pintura se desenvolve no diálogo entre intenção, experimentação e acaso. Cada trabalho resulta de um processo de observação e de decisões que se reorganizam à medida que a matéria reage.",
 ]
 CV = [
     ("Formação", [
@@ -550,7 +548,7 @@ def build(args):
     series_sec = (f'<section class="sec"><div class="shead2"><div><p class="eyebrow">Séries</p><h2>Investigações</h2></div>'
                   f'<a class="pill" href="obras.html">Todas as obras →</a></div><div class="sgrid">{scards}</div></section>')
     teaser = (f'<section class="sec"><div class="teaser"><img src="img/inicio.jpg" alt="{e(nome)} no ateliê" loading="lazy">'
-              f'<div><p class="eyebrow">Sobre</p><h2>{e(nome)}</h2><p>{e(STATEMENT[0])}</p><a class="pill" href="sobre.html">Conheça a artista</a></div></div></section>')
+              f'<div><p class="eyebrow">Sobre</p><h2>{e(nome)}</h2><p>{e(STATEMENT[0])} {e(STATEMENT[3])}</p><a class="pill" href="sobre.html">Conheça a artista</a></div></div></section>')
     prev = os.path.join(args.out, "previa.html")
     if os.path.exists(prev):
         os.remove(prev)
