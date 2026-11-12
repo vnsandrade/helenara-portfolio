@@ -32,24 +32,23 @@ STATEMENT = [
 ]
 CV = [
     ("Formação", [
-        "Design de Interiores, Universidade Positivo, Curitiba/PR (2016)",
-        "Arte e Mercado, Escola Nano de Art Market (em andamento)",
-        "Processo Criativo, com Juliana dos Santos, Instituto Tomie Ohtake",
+        "Design de Interiores, Universidade Positivo, 2016",
+        "Processo Criativo, Juliana dos Santos, Instituto Tomie Ohtake",
         "Mentoria Negócios de Arte, Adriana Braga",
+        "Arte e Mercado, Escola Nano de Art Market",
     ]),
     ("Exposições individuais", [
-        "2025 · Strata, curadoria de João Paulo Carvalho, Curitiba/PR",
-        "2023 · Rastros, curadoria de João Paulo Carvalho, Curitiba/PR",
+        "2025 · Strata, Curitiba (PR). Curadoria de João Paulo Carvalho",
+        "2023 · Rastros, Curitiba (PR). Curadoria de João Paulo Carvalho",
     ]),
     ("Exposições coletivas", [
-        "2026 · Beyond Translations, Saphira & Ventura Gallery, Nova York/EUA",
-        "2024 · Diálogos para o Planeta G20, Parque Maria da Glória, Rio de Janeiro/RJ",
-        "2024 · Empower Her Art Forum, Museu da Civilização Egípcia, Cairo/Egito",
-        "2024 · When Art Meets Carnival, Saphira & Ventura Gallery e Espaço BB, Rio de Janeiro/RJ",
-        "2023 · Miami Art Week, Saphira & Ventura Gallery, Miami/EUA",
-        "2023 · Revival, Saphira & Ventura Gallery, Nova York/EUA",
+        "2026 · Beyond Translations, Nova York, EUA",
+        "2024 · Diálogos para o Planeta G20, Rio de Janeiro, Brasil",
+        "2024 · Empower Her Art Forum, Cairo, Egito",
+        "2024 · When Art Meets Carnival, Rio de Janeiro, Brasil",
+        "2023 · Miami Art Week, Miami, EUA",
+        "2023 · Revival, Nova York, EUA",
     ]),
-    ("Seleções", ["2022 · 5º Salão de Artes de Pinhais, Pinhais/PR"]),
 ]
 TEC_PUBLICA = {"Acrílica sobre tela": "Acrílica sobre tela", "Tinta Acrílica": "Acrílica sobre tela",
                "Tinta Óleo": "Óleo sobre tela", "Técnica mista": "Técnica mista", "Colagem": "Colagem"}
