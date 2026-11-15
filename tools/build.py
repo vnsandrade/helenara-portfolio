@@ -81,16 +81,20 @@ def montar_obras(base, db):
         for k in ("t", "a", "s", "tec", "mat"):
             if ed.get(k) is not None:
                 w[k] = str(ed[k])
+        if ed.get("q"):
+            w["q"] = int(ed["q"]) or 1
         if ed.get("alt") and ed.get("larg"):
             w["alt"], w["larg"] = float(ed["alt"]), float(ed["larg"])
             w["dim"] = f'{fmt(ed["alt"])} x {fmt(ed["larg"])}' + (" (cada)" if w["q"] > 1 else "")
         if ed.get("foto"):
             w["foto"] = ed["foto"]
+            if w["id"] == "o26":
+                w["detalhes"] = []  # a foto nova já mostra os dois painéis
         W.append(w)
     for doc_id, n in sorted(novas.items(), key=lambda kv: str(kv[1].get("criado", ""))):
         W.append({"id": "n_" + doc_id, "ord": 1000, "t": n.get("t") or "Sem título", "a": str(n.get("a") or ""),
                   "s": n.get("s") or "", "tec": n.get("tec") or "", "mat": n.get("mat") or "",
-                  "dim": f'{fmt(n["alt"])} x {fmt(n["larg"])}', "q": 1, "foto": n["foto"], "detalhes": [], "alt": float(n["alt"]), "larg": float(n["larg"]),
+                  "dim": f'{fmt(n["alt"])} x {fmt(n["larg"])}' + (" (cada)" if int(n.get("q") or 1) > 1 else ""), "q": int(n.get("q") or 1), "foto": n["foto"], "detalhes": [], "alt": float(n["alt"]), "larg": float(n["larg"]),
                   "criado": n.get("criado", "")})
     out = []
     for w in W:
@@ -130,6 +134,60 @@ def gerar_imagens(keys, media, out):
         with Image.open(dst_t) as t:
             tamanhos[k] = t.size
     return tamanhos
+
+
+GAP_CM = 5
+
+
+def separar_paineis(w, media, out, tam):
+    """Díptico/tríptico fotografado lado a lado: separa os painéis pela faixa de fundo e
+    refaz a foto principal com um respiro branco entre eles (igual ao Acervo)."""
+    import numpy as np
+    q, k = w["q"], w["foto"]
+    if k == "26":
+        return ["26", "26-b"]
+    nomes = [f"{k}-p{i + 1}" for i in range(q)]
+    if all(os.path.exists(os.path.join(out, "img", n + ".jpg")) for n in nomes):
+        return nomes
+    src = next(p for p in (os.path.join(media, k + x) for x in (".jpg", ".jpeg", ".png")) if os.path.exists(p))
+    im = ImageOps.exif_transpose(Image.open(src)).convert("RGB")
+    im.thumbnail((2000, 2000), Image.LANCZOS)
+    L = np.asarray(im.convert("L"), dtype=np.float32)
+    mean, sd = L.mean(0), L.std(0)
+    fundo = (sd < 16) & ((mean < 55) | (mean > 215))
+    Wd = L.shape[1]
+    x0, x1 = 0, Wd - 1
+    while x0 < Wd * 0.1 and fundo[x0]: x0 += 1
+    while x1 > Wd * 0.9 and fundo[x1]: x1 -= 1
+    larg, cortes = x1 - x0 + 1, []
+    for j in range(1, q):
+        c, r, best, x = x0 + round(larg * j / q), round(larg * 0.12), None, None
+        x = c - r
+        while x <= c + r:
+            if 0 <= x < Wd and fundo[x]:
+                e2 = x
+                while e2 + 1 < Wd and fundo[e2 + 1]: e2 += 1
+                if e2 - x + 1 >= max(2, Wd * 0.003):
+                    d = abs((x + e2) / 2 - c)
+                    if best is None or d < best[2]: best = (x, e2 + 1, d)
+                x = e2
+            x += 1
+        cortes.append((best[0], best[1]) if best else (c, c))
+    paineis, ini = [], x0
+    for a, b in cortes + [(x1 + 1, x1 + 1)]:
+        paineis.append(im.crop((ini, 0, a, im.height))); ini = b
+    for n, pnl in zip(nomes, paineis):
+        pnl.save(os.path.join(out, "img", n + ".jpg"), quality=86)
+    pw = sum(p.width for p in paineis) / len(paineis)
+    gap = round(pw * GAP_CM / (w.get("larg") or 50))
+    comp = Image.new("RGB", (sum(p.width for p in paineis) + gap * (q - 1), im.height), (255, 255, 255))
+    x = 0
+    for pnl in paineis:
+        comp.paste(pnl, (x, 0)); x += pnl.width + gap
+    a = comp.copy(); a.thumbnail((1800, 1800), Image.LANCZOS); a.save(os.path.join(out, "img", k + ".jpg"), quality=84, optimize=True, progressive=True)
+    b = comp.copy(); b.thumbnail((720, 1200), Image.LANCZOS); b.save(os.path.join(out, "img", k + "-t.jpg"), quality=80, optimize=True, progressive=True)
+    tam[k] = b.size
+    return nomes
 
 
 CSS = """
@@ -420,8 +478,13 @@ def parede(w, tam):
     pw, ph = (L, S) if tw >= th else (S, L)
     if w.get("alt") and w.get("larg"):
         pw, ph = w["larg"], w["alt"]
-    paineis = [w["foto"]] + (w["detalhes"][:1] if w["q"] > 1 else [])
-    PX, CX, CY, gap = 6.0935, 574.5, 760.4, 8
+    paineis = w.get("paineis") or [w["foto"]]
+    if len(paineis) > 1:
+        tw, th = tam.get(paineis[0] + "#p", (tw, th))
+        pw, ph = (L, S) if tw >= th else (S, L)
+        if w.get("alt") and w.get("larg"):
+            pw, ph = w["larg"], w["alt"]
+    PX, CX, CY, gap = 6.0935, 574.5, 760.4, GAP_CM
     w2, h2, g2 = pw * PX, ph * PX, gap * PX
     tot = len(paineis) * w2 + (len(paineis) - 1) * g2
     x0, y0 = CX - tot / 2, CY - h2 / 2
@@ -458,6 +521,11 @@ def build(args):
                 print(k)
         return
     tam = gerar_imagens(dict.fromkeys(keys), args.media, args.out)
+    for w in W:
+        if w["q"] > 1:
+            w["paineis"] = separar_paineis(w, args.media, args.out, tam)
+            with Image.open(os.path.join(args.out, "img", w["paineis"][0] + ".jpg")) as t:
+                tam[w["paineis"][0] + "#p"] = t.size
     os.makedirs(os.path.join(args.out, "obras"), exist_ok=True)
     import shutil
     for f in ("parede.jpg", "parede-vazia.jpg", "pessoa.png"):
@@ -560,7 +628,7 @@ def build(args):
         if os.path.basename(f) not in validas:
             os.remove(f)
     # remove fotos de obras que saíram do site (para não ficarem públicas)
-    usadas = {k + x for k in keys for x in (".jpg", "-t.jpg")} | {"parede.jpg", "parede-vazia.jpg"}
+    usadas = {k + x for k in keys for x in (".jpg", "-t.jpg")} | {"parede.jpg", "parede-vazia.jpg"} | {p + ".jpg" for w in W for p in w.get("paineis", [])}
     for f in glob.glob(os.path.join(args.out, "img", "*.jpg")):
         if os.path.basename(f) not in usadas:
             os.remove(f)
